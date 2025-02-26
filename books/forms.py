@@ -1,11 +1,10 @@
-from django.contrib import admin
 from django import forms
-from .models import Books, Category
+from .models import Books
 
 class BookForm(forms.ModelForm):
     class Meta:
         model = Books
-        fields = '__all__'
+        fields = ['isbn', 'category']
 
     def clean(self):
         cleaned_data = super().clean()
@@ -21,13 +20,3 @@ class BookForm(forms.ModelForm):
             cleaned_data["image_url"] = book.image_url
 
         return cleaned_data
-
-class BooksAdmins(admin.ModelAdmin):
-    form = BookForm
-    list_display = ("title", "author", "isbn", "realised_date", "category")
-    search_fields = ("title", "author", "isbn")
-    ordering = ("title",)
-    readonly_fields = ("title", "author", "realised_date", "description", "image_url")
-
-admin.site.register(Category)
-admin.site.register(Books, BooksAdmins)

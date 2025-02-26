@@ -1,5 +1,6 @@
 import requests
 from django.db import models
+from datetime import datetime
 
 class Category(models.Model):
     class Meta:
@@ -15,6 +16,9 @@ class Category(models.Model):
         return self.friendly_name
     
 class Books(models.Model):
+    class Meta:
+        verbose_name_plural = 'Books'
+    
     category = models.ForeignKey('Category', null=True, blank=True, on_delete=models.SET_NULL)
     isbn = models.CharField(max_length=13, null=True, blank=True, unique=True)
     sku = models.CharField(max_length=254, null=True, blank=True)
@@ -42,10 +46,28 @@ class Books(models.Model):
             data = response.json().get(f"ISBN:{self.isbn}", {})
 
             if data:
-                self.title = data.get("title", self.title)
-                self.author = ", ".join([author["name"] for author in data.get("authors", [])])
-                self.realised_date = data.get("publish_date", None)  # Open Library provides a string
-                self.description = data.get("description", {}).get("value", "")
+                self.title = data.get("title", self.title or "Unknown Title")
+                self.author = ", ".join([author["name"] for author in data.get("authors", [])]) if data.get("authors") else "Unknown Author"
+                raw_publish_date = data.get("publish_date", None)
+                
+                # Convert publish_date to YYYY-MM-DD format if possible
+                if raw_publish_date:
+                    try:
+                        parsed_date = datetime.strptime(raw_publish_date, "%B %d, %Y")  # Example: "October 1, 1988"
+                        self.realised_date = parsed_date.date()
+                    except ValueError:
+                        try:
+                            parsed_date = datetime.strptime(raw_publish_date, "%Y")  # Example: "1988"
+                            self.realised_date = parsed_date.date()
+                        except ValueError:
+                            self.realised_date = None  # If parsing fails, set to None
+                
+                self.description = (
+                    data.get("description", {}).get("value", "No description available.")
+                    if isinstance(data.get("description"), dict)
+                    else data.get("description", "No description available.")
+                )
+
                 cover = data.get("cover", {}).get("large") or data.get("cover", {}).get("medium")
                 self.image_url = cover if cover else self.image_url
 
