@@ -2,6 +2,7 @@ from django.contrib import admin
 from django import forms
 from .models import Books, Category
 
+
 class BookForm(forms.ModelForm):
     class Meta:
         model = Books
@@ -22,12 +23,11 @@ class BookForm(forms.ModelForm):
 
         return cleaned_data
 
+@admin.register(Books)
 class BooksAdmins(admin.ModelAdmin):
     form = BookForm
     list_display = ("title", "author", "isbn", "realised_date", "category")
     search_fields = ("title", "author", "isbn")
-    ordering = ("title",)
-    readonly_fields = ("title", "author", "realised_date", "description", "image_url")
+    ordering = ("category",)
 
 admin.site.register(Category)
-admin.site.register(Books, BooksAdmins)
