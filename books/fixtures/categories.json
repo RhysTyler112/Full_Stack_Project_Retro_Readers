@@ -1,0 +1,6 @@
+[
+{"pk": 1, "model": "books.category", "fields": {"name": "scify_fantasy", "friendly_name": "Sci-fy & Fantasy"}}, 
+{"pk": 2, "model": "books.category", "fields": {"name": "fiction", "friendly_name": "Fiction"}}, 
+{"pk": 3, "model": "books.category", "fields": {"name": "educational", "friendly_name": "Educational"}}, 
+{"pk": 4, "model": "books.category", "fields": {"name": "crime", "friendly_name": "Crime"}}
+]
