@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block page_header %}
+    <div class="container header-container">
+        <div class="row">
+            <div class="col"></div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+  <h2>Book List</h2>
+  <ul>
+    {% for book in books %}
+      <li>
+        <img src="{{ book.image_url }}" alt="{{ book.title }}" width="100">
+        <br>
+        <strong>{{ book.title }}</strong> 
+        <br>
+        by {{ book.author }} ({{ book.realised_date }})
+      </li>
+    {% endfor %}
+  </ul>
+
+{% endblock %}
