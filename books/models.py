@@ -46,12 +46,14 @@ class Books(models.Model):
             data = response.json().get(f"ISBN:{self.isbn}", {})
 
             if data:
-                self.title = data.get("title", self.title or "Unknown Title")
-                self.author = ", ".join([author["name"] for author in data.get("authors", [])]) if data.get("authors") else "Unknown Author"
+                if not self.title:
+                    self.title = data.get("title", "Unknown Title")
+                if not self.author:
+                    self.author = ", ".join([author["name"] for author in data.get("authors", [])]) if data.get("authors") else "Unknown Author"
                 raw_publish_date = data.get("publish_date", None)
                 
                 # Convert publish_date to YYYY-MM-DD format if possible
-                if raw_publish_date:
+                if raw_publish_date and not self.realised_date:
                     try:
                         parsed_date = datetime.strptime(raw_publish_date, "%B %d, %Y")  # Example: "October 1, 1988"
                         self.realised_date = parsed_date.date()
@@ -62,16 +64,11 @@ class Books(models.Model):
                         except ValueError:
                             self.realised_date = None  # If parsing fails, set to None
                 
-                self.description = (
-                    data.get("description", {}).get("value", "No description available.")
-                    if isinstance(data.get("description"), dict)
-                    else data.get("description", "No description available.")
-                )
-
                 cover = data.get("cover", {}).get("large") or data.get("cover", {}).get("medium")
-                self.image_url = cover if cover else self.image_url
+                if not self.image_url:
+                    self.image_url = cover if cover else self.image_url
 
     def save(self, *args, **kwargs):
-        if not self.title or not self.author:  # Only fetch if details are missing
+        if not self.title or not self.author or not self.realised_date or not self.image_url:  # Only fetch if details are missing
             self.fetch_book_details()
         super().save(*args, **kwargs)

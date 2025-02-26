@@ -23,7 +23,6 @@ class BookForm(forms.ModelForm):
             cleaned_data["title"] = cleaned_data.get("title") or book.title
             cleaned_data["author"] = cleaned_data.get("author") or book.author
             cleaned_data["realised_date"] = cleaned_data.get("realised_date") or book.realised_date
-            cleaned_data["description"] = cleaned_data.get("description") or book.description
             cleaned_data["image_url"] = cleaned_data.get("image_url") or book.image_url
 
         return cleaned_data
