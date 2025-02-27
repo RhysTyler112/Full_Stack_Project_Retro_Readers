@@ -28,6 +28,9 @@ class Books(models.Model):
     description = models.TextField(null=True, blank=True)
     image_url = models.URLField(max_length=1024, null=True, blank=True)
     image = models.ImageField(null=True, blank=True)
+    price_softcover = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)
+    price_hardcover = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)
+    price_audiobook = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)
 
     def __str__(self):
         return self.title
