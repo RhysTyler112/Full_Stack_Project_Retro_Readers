@@ -29,6 +29,14 @@
             <div class="col-12 col-md-6 col-lg-4">
                 <div class="product-details-container mb-5 mt-md-5">
                     <p class="mb-0">{{ book.title }}</p>
+                    {% if book.category %}
+                        <p class="small mt-1 mb-0">
+                            <a class="text-muted" href="{% url 'books' %}?category={{ book.category.name}}">
+                                <i class="fa-solid fa-quote-left mr-1"> {{ book.category.friendly_name }}</i>
+                                <i class="fa-solid fa-quote-right"></i>                            
+                            </a>
+                        </p>
+                    {% endif%}
                     <p class="text-muted small mb-0">by {{ book.author }} ({{ book.realised_date }})</p>
                     <br>
                     <p class="mt-3">{{ book.description }}</p>
@@ -55,6 +63,9 @@
         </div>
     </div>
 
+    
+{% endblock %}
+{% block postloadjs %}
     <script>
         function selectFormat(format, price) {
             // Handle the format selection logic here
@@ -63,4 +74,3 @@
         }
     </script>
 {% endblock %}
-

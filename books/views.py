@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.contrib import messages
-from django.db.models import Q
+from django.db.models import Q, F
 from .models import Books, Category
 
 # Create your views here.
@@ -10,8 +10,26 @@ def book_list(request):
     books = Books.objects.all()
     query = None
     categories = None
-    
+    sort = None
+    direction = None
+
     if request.GET:
+        if 'sort' in request.GET:
+            sortkey = request.GET['sort']
+            sort = sortkey
+            if sortkey == 'title':
+                sortkey = 'lower_title'
+                books = books.annotate(lower_title=F('title'))
+
+            if sortkey == 'category':
+                sortkey = 'category__name'
+
+            if 'direction' in request.GET:
+                direction = request.GET['direction']
+                if direction == 'desc':
+                    sortkey = f'-{sortkey}'
+            books = books.order_by(sortkey)
+            
         if 'category' in request.GET:
             categories = request.GET['category'].split(',')
             books = books.filter(category__name__in=categories)
@@ -26,20 +44,22 @@ def book_list(request):
             queries = Q(title__icontains=query) | Q(description__icontains=query) 
             books = books.filter(queries)
     
-    format_filter = request.GET.get('format')
-    if format_filter == 'softcover':
-        books = Books.objects.filter(price_softcover__isnull=False)
-    elif format_filter == 'hardcover':
-        books = Books.objects.filter(price_hardcover__isnull=False)
-    elif format_filter == 'audiobook':
-        books = Books.objects.filter(price_audiobook__isnull=False)
-    else:
-        books = Books.objects.all()
+        if 'format' in request.GET:
+            format_filter = request.GET['format']
+            if format_filter == 'softcover':
+                books = books.filter(price_softcover__isnull=False)
+            elif format_filter == 'hardcover':
+                books = books.filter(price_hardcover__isnull=False)
+            elif format_filter == 'audiobook':
+                books = books.filter(price_audiobook__isnull=False)
+        
+    current_sorting = f'{sort}_{direction}'
         
     context = {
         'books': books,
         'search_term': query,
         'current_categories': categories,
+        'current_sorting': current_sorting,
     }
     
     return render(request, "books/books.html", context)
