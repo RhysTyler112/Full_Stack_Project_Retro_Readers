@@ -36,8 +36,8 @@
                         <div class="sort-select-wrapper w-50">
                             <select id="sort-selector" class="custom-select custom-select-sm rounded-0 border border-{% if current_sorting != 'None_None' %}info{% else %}black{% endif %}">
                                 <option value="reset" {% if current_sorting == 'None_None' %}selected{% endif %}>Sort by...</option>
-                                <option value="price_asc" {% if current_sorting == 'price_asc' %}selected{% endif %}>Price (low to high)</option>
-                                <option value="price_desc" {% if current_sorting == 'price_desc' %}selected{% endif %}>Price (high to low)</option>
+                                <option value="price_asc" {% if current_sorting == 'price_asc' %}selected{% endif %}>Price (high to low)</option>
+                                <option value="price_desc" {% if current_sorting == 'price_desc' %}selected{% endif %}>Price (low to high)</option>
                                 <option value="title_asc" {% if current_sorting == 'title_asc' %}selected{% endif %}>Title (A-Z)</option>
                                 <option value="title_desc" {% if current_sorting == 'title_desc' %}selected{% endif %}>Title (Z-A)</option>
                                 <option value="category_asc" {% if current_sorting == 'category_asc' %}selected{% endif %}>Category (A-Z)</option>
@@ -73,7 +73,11 @@
                                 <div class="card-footer bg-white pt-0 border-0 text-left">
                                     <div class="row">
                                         <div class="col">
-                                            <p class="lead mb-0 text-left font-weight-bold">From £8.99</p>
+                                            {% if book.get_lowest_price %}
+                                                <p class="lead mb-0 text-left font-weight-bold">£{{ book.get_lowest_price }}</p>
+                                            {% else %}
+                                                <p class="lead mb-0 text-left font-weight-bold">Price not available</p>
+                                            {% endif %}
                                             <br>
                                             {% if book.category %}
                                                 <p class="small mt-1 mb-0">

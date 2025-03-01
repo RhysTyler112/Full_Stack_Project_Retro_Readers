@@ -3,8 +3,6 @@ from django.contrib import messages
 from django.db.models import Q, F
 from .models import Books, Category
 
-# Create your views here.
-
 def book_list(request):
     """A view that displays all books, including sorting and search queries"""
     books = Books.objects.all()
@@ -20,9 +18,10 @@ def book_list(request):
             if sortkey == 'title':
                 sortkey = 'lower_title'
                 books = books.annotate(lower_title=F('title'))
-
-            if sortkey == 'category':
+            elif sortkey == 'category':
                 sortkey = 'category__name'
+            elif sortkey == 'price':
+                sortkey = 'price_softcover'  # Default to softcover price for sorting
 
             if 'direction' in request.GET:
                 direction = request.GET['direction']

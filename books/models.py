@@ -75,3 +75,10 @@ class Books(models.Model):
         if not self.title or not self.author or not self.realised_date or not self.image_url:  # Only fetch if details are missing
             self.fetch_book_details()
         super().save(*args, **kwargs)
+    
+    def get_lowest_price(self):
+        prices = [self.price_softcover, self.price_hardcover, self.price_audiobook]
+        prices = [price for price in prices if price is not None]
+        if prices:
+            return min(prices)
+        return None
