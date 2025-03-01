@@ -1,27 +1,27 @@
 <div class="collapse navbar-collapse" id="main-nav">
     <ul class="navbar-nav w-auto mx-auto">
         <li class="nav-item dropdown">
-            <a class="logo-font font-weight-bold nav-link text-black mr-5" href="#" id="all-products-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <a class="logo-font font-weight-bold nav-link text-black mr-5" href="#" id="all-books-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Books
             </a>
-            <div class="dropdown-menu border-0" aria-labelledby="all-products-link">
-                <a href="" class="dropdown-item">Hard Cover</a>
-                <a href="" class="dropdown-item ">Soft Cover</a>
-                <a href="" class="dropdown-item ">Audiobooks</a>
+            <div class="dropdown-menu border-0" aria-labelledby="all-books-link">
+                <a href="{% url 'books' %}?format=hardcover" class="dropdown-item">Hard Cover</a>
+                <a href="{% url 'books' %}?format=softcover" class="dropdown-item ">Soft Cover</a>
+                <a href="{% url 'books' %}?format=audiobook" class="dropdown-item ">Audiobooks</a>
                 <a href="{% url 'books' %}" class="dropdown-item">All Books</a>
             </div>
         </li>
 
         <li class="nav-item dropdown">
-            <a class="logo-font font-weight-bold nav-link text-black mr-5" href="#" id="clothing-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <a class="logo-font font-weight-bold nav-link text-black mr-5" href="#" id="genere-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Genere
             </a>
-            <div class="dropdown-menu border-0" aria-labelledby="clothing-link">
-                <a href="" class="dropdown-item">SCi Fy and Fantasy</a>
-                <a href="" class="dropdown-item">Fiction</a>
-                <a href="" class="dropdown-item">Educational</a>
-                <a href="" class="dropdown-item">Crime</a>
-                <a href="" class="dropdown-item">All Genere</a>
+            <div class="dropdown-menu border-0" aria-labelledby="genere-link">
+                <a href="{% url 'books' %}?category=scify_fantasy" class="dropdown-item">SCi Fy and Fantasy</a>
+                <a href="{% url 'books' %}?category=fiction" class="dropdown-item">Fiction</a>
+                <a href="{% url 'books' %}?category=educational" class="dropdown-item">Educational</a>
+                <a href="{% url 'books' %}?category=crime" class="dropdown-item">Crime</a>
+                <a href="{% url 'books' %}?category=scify_fantasy,fiction,educational,crime" class="dropdown-item">All Genere</a>
             </div>
         </li>
     </ul>
