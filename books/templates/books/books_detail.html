@@ -41,23 +41,6 @@
                     <br>
                     <p class="mt-3">{{ book.description }}</p>
                     <br>
-                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                        {% if book.price_softcover %}
-                            <label class="btn btn-primary">
-                                <input type="radio" name="format" id="softcover" autocomplete="off" onclick="selectFormat('softcover', {{ book.price_softcover }})"> Softcover - £{{ book.price_softcover }}
-                            </label>
-                        {% endif %}
-                        {% if book.price_hardcover %}
-                            <label class="btn btn-secondary">
-                                <input type="radio" name="format" id="hardcover" autocomplete="off" onclick="selectFormat('hardcover', {{ book.price_hardcover }})"> Hardcover - £{{ book.price_hardcover }}
-                            </label>
-                        {% endif %}
-                        {% if book.price_audiobook %}
-                            <label class="btn btn-success">
-                                <input type="radio" name="format" id="audiobook" autocomplete="off" onclick="selectFormat('audiobook', {{ book.price_audiobook }})"> Audiobook - £{{ book.price_audiobook }}
-                            </label>
-                        {% endif %}
-                    </div>
                     <form class="form" action="{% url 'add_to_bag' book.isbn %}" method="POST">
                         {% csrf_token %}
                         <div class="form-row">
@@ -67,6 +50,25 @@
                                     <div class="input-group">
                                         <input class="form-control qty_input" type="number" name="quantity" value="1" min="1" max="99" data-item_id="{{ book.isbn }}" id="id_qty_{{ book.isbn }}">
                                     </div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                    {% if book.price_softcover %}
+                                        <label class="btn btn-primary">
+                                            <input type="radio" name="format" id="softcover" autocomplete="off" value="softcover"> Softcover - £{{ book.price_softcover }}
+                                        </label>
+                                    {% endif %}
+                                    {% if book.price_hardcover %}
+                                        <label class="btn btn-secondary">
+                                            <input type="radio" name="format" id="hardcover" autocomplete="off" value="hardcover"> Hardcover - £{{ book.price_hardcover }}
+                                        </label>
+                                    {% endif %}
+                                    {% if book.price_audiobook %}
+                                        <label class="btn btn-success">
+                                            <input type="radio" name="format" id="audiobook" autocomplete="off" value="audiobook"> Audiobook - £{{ book.price_audiobook }}
+                                        </label>
+                                    {% endif %}
                                 </div>
                             </div>
                             <div class="col-12">
