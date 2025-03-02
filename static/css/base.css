@@ -101,6 +101,11 @@ a.category-badge > span.badge:hover {
     cursor: pointer;
 }
 
+.book-image {
+    width: 100px;
+    height: 150px;
+    object-fit: cover;
+}
 
 /* -------------------------------- Media Queries */
 

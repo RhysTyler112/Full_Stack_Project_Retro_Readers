@@ -39,16 +39,15 @@
                                     <tr>
                                         <td class="p-3 w-25">
                                             {% if item.book.image_url %}
-                                                <img src="{{ item.book.image_url }}" alt="{{ item.book.title }}" class="img-fluid rounded">
+                                                <img src="{{ item.book.image_url }}" alt="{{ item.book.title }}" class="img-fluid rounded book-image">
                                             {% else %}
-                                                <img src="{% static 'images/default_book_image.jpg' %}" alt="{{ item.book.title }}" class="img-fluid rounded">
+                                                <img src="{% static 'images/default_book_image.jpg' %}" alt="{{ item.book.title }}" class="img-fluid rounded book-image">
                                             {% endif %}
                                         </td>
                                         <td class="py-3"> 
                                            <p class="my-0"> <strong>{{ item.book.title }}</strong></p>
                                            <p class="my-0 small ">Book Type:{{ item.format|upper }}</p>
                                            <p class="my-0 small text-muted">SKU:{{ item.book.sku|upper }}</p>
-                                           
                                         </td>
                                         <td class="py-3">
                                             <p class="my-0">£{{ item.price }}</p>
@@ -67,11 +66,11 @@
                                                             </button>
                                                         </div>
                                                         <input class="form-control form-control-small qty_input" type="number" 
-                                                            name="quantity" value="1" min="{{ item.quantity }}" max="99" 
-                                                            data-item_id="{{ item.item_id  }}" id="id_qty_{{ item.item_id  }}">
-                                                        <div class="input-group-apppend">
+                                                            name="quantity" value="{{ item.quantity }}" min="1" max="99" 
+                                                            data-item_id="{{ item.item_id }}" id="id_qty_{{ item.item_id }}">
+                                                        <div class="input-group-append">
                                                             <button class="increment-qty btn btn-small btn-black rounded-0"
-                                                                data-item_id="{{ item.item_id  }}" id="increment-qty_{{ item.item_id  }}">
+                                                                data-item_id="{{ item.item_id }}" id="increment-qty_{{ item.item_id }}">
                                                                 <span>
                                                                     <i class="fas fa-plus fa-small"></i>
                                                                 </span>
@@ -81,12 +80,11 @@
                                                 </div>
                                             </form>
                                             <a class="update-link text-info"><small>Update</small></a>
-                                            <a class="remove-item text-danger float-right" id="remove_{{ item.item_id}}" data-size="{{ item.format }}"><small>Remove</small></a>
+                                            <a class="remove-item text-danger float-right" id="remove_{{ item.item_id }}" data-size="{{ item.format }}"><small>Remove</small></a>
                                         </td>
                                         <td class="py-3">
                                             <p class="my-0">£{{ item.price }}</p>
                                         </td>
-                                        <td><a href="" class="btn btn-outline-danger rounded-0">Remove</a></td>
                                     </tr>
                                 {% endfor %}
                                 <tr>
