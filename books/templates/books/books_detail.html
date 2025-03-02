@@ -54,11 +54,12 @@
                                                 <span class="icon">
                                                     <i class="fas fa-minus"></i>
                                                 </span>
-                                        </button>
+                                            </button>
                                         </div>
                                         <input class="form-control qty_input" type="number" 
                                             name="quantity" value="1" min="1" max="99" 
                                             data-item_id="{{ book.isbn }}" id="id_qty_{{ book.isbn }}">
+                                        <div class="input-group-apppend">    
                                             <button class="increment-qty btn btn-black rounded-0"
                                                 data-item_id="{{ book.isbn }}" id="increment-qty_{{ book.isbn }}">
                                                 <span class="icon">
