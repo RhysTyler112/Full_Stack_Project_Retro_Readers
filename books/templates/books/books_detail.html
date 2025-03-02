@@ -48,7 +48,24 @@
                                 <p class="mt-3"><strong>Quantity:</strong></p>
                                 <div class="form-group w-50">
                                     <div class="input-group">
-                                        <input class="form-control qty_input" type="number" name="quantity" value="1" min="1" max="99" data-item_id="{{ book.isbn }}" id="id_qty_{{ book.isbn }}">
+                                        <div class="input-group-prepend">
+                                            <button class="decrement-qty btn btn-black rounded-0"
+                                            data-item_id="{{ book.isbn }}" id="decrement-qty_{{ book.isbn}}">
+                                                <span class="icon">
+                                                    <i class="fas fa-minus"></i>
+                                                </span>
+                                        </button>
+                                        </div>
+                                        <input class="form-control qty_input" type="number" 
+                                            name="quantity" value="1" min="1" max="99" 
+                                            data-item_id="{{ book.isbn }}" id="id_qty_{{ book.isbn }}">
+                                            <button class="increment-qty btn btn-black rounded-0"
+                                                data-item_id="{{ book.isbn }}" id="increment-qty_{{ book.isbn }}">
+                                                <span class="icon">
+                                                    <i class="fas fa-plus"></i>
+                                                </span>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -90,12 +107,17 @@
 
     
 {% endblock %}
+
 {% block postloadjs %}
-    <script type="text/javascript">
-        function selectFormat(format, price) {
-            // Handle the format selection logic here
-            console.log(`Selected format: ${format}, Price: £${price}`);
-            // You can add more logic to handle the selection, such as updating a hidden form field or redirecting to a checkout page
-        }
-    </script>
+{{ block.super }}
+{% include 'books/includes/quantity_input_script.html' %}
+
+<script type="text/javascript">
+    function selectFormat(format, price) {
+        // Handle the format selection logic here
+        console.log(`Selected format: ${format}, Price: £${price}`);
+        // You can add more logic to handle the selection, such as updating a hidden form field or redirecting to a checkout page
+    }
+</script>
 {% endblock %}
+
