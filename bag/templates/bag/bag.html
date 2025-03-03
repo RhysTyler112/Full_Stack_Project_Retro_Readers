@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load bag_tools %}
 
 {% block page_header %}
     <div class="container header-container">
@@ -53,7 +54,7 @@
                                             <p class="my-0">£{{ item.price }}</p>
                                         </td>
                                         <td class="py-3">
-                                            <form class="form update-form" method="POST" action="">
+                                            <form class="form update-form" method="POST" action="{% url 'adjust_bag' item.book.isbn %}">
                                                 {% csrf_token %}
                                                 <div class="form-group">
                                                     <div class="input-group">
@@ -66,8 +67,9 @@
                                                             </button>
                                                         </div>
                                                         <input class="form-control form-control-small qty_input" type="number" 
-                                                            name="quantity" value="{{ item.quantity }}" min="1" max="99" 
+                                                            name="quantity" value="{{ item.quantity }}" min="0" max="99" 
                                                             data-item_id="{{ item.item_id }}" id="id_qty_{{ item.item_id }}">
+                                                        <input type="hidden" name="format" value="{{ item.format }}">
                                                         <div class="input-group-append">
                                                             <button class="increment-qty btn btn-small btn-black rounded-0"
                                                                 data-item_id="{{ item.item_id }}" id="increment-qty_{{ item.item_id }}">
@@ -80,10 +82,10 @@
                                                 </div>
                                             </form>
                                             <a class="update-link text-info"><small>Update</small></a>
-                                            <a class="remove-item text-danger float-right" id="remove_{{ item.item_id }}" data-size="{{ item.format }}"><small>Remove</small></a>
+                                            <a class="remove-item text-danger float-right" id="remove_{{ item.item_id }}" data-format="{{ item.format }}"><small>Remove</small></a>
                                         </td>
                                         <td class="py-3">
-                                            <p class="my-0">£{{ item.price }}</p>
+                                            <p class="my-0">£{{ item.price | calc_subtotal:item.quantity }}</p>
                                         </td>
                                     </tr>
                                 {% endfor %}
@@ -137,7 +139,7 @@
 {% include 'books/includes/quantity_input_script.html' %}
 <script class="text/javascript">
     //Update quantity on bag page
-    $('update-link').click(function(e){
+    $('.update-link').click(function(e){
         var form = $(this).prev('.update-form');
         form.submit();
     });
@@ -145,7 +147,7 @@
     $('.remove-item').click(function(e){
         var csrf_token = "{{ csrf_token }}"
         var item_id = $(this).attr('id').split('remove_')[1];
-        var size = $(this).attr('data-size');
+        var format = $(this).attr('format');
         var url = `/bag/remove/${item_id}/`;
         var data = {'csrfmiddlewaretoken': csrf_token, 'format': format};
 
@@ -153,7 +155,6 @@
         .done(function(){
             location.reload();
         });
-
     });
 </script>
 {% endblock %}
