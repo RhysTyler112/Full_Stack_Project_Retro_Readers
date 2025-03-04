@@ -76,4 +76,5 @@ def remove_from_bag(request, isbn):
             return HttpResponse(status=404)
     
     except Exception as e:
+        messages.error(request, f'Error removing item: {e}')
         return HttpResponse(status=500)
