@@ -4,7 +4,6 @@ from books.models import Books
 
 def view_bag(request):
     """ A view that renders the bag contents page """
-
     return render(request, 'bag/bag.html')
 
 def add_to_bag(request, isbn):
@@ -22,10 +21,9 @@ def add_to_bag(request, isbn):
             bag[isbn][format] = quantity
     else:
         bag[isbn] = {format: quantity}
+        messages.success(request, f'Added {book.title} ({format}) to your bag')
 
     request.session['bag'] = bag
-    messages.success(request, f'Added {book.title} ({format}) to your bag')
-
     return redirect(redirect_url)
 
 def adjust_bag(request, isbn):
@@ -38,19 +36,22 @@ def adjust_bag(request, isbn):
     if format:
         if quantity > 0:
             bag[isbn][format] = quantity
+            messages.success(request, f'Updated {book.title} ({format}) quantity to {quantity}')
         else:
             del bag[isbn][format]
             if not bag[isbn]:
                 bag.pop(isbn)
+            messages.success(request, f'Removed {book.title} ({format}) from your bag')
     else:
         if quantity > 0:
             bag[isbn] = quantity
+            messages.success(request, f'Updated {book.title} quantity to {quantity}')
         else:
             bag.pop(isbn)
+            messages.success(request, f'Removed {book.title} from your bag')
 
     request.session['bag'] = bag
     return redirect(reverse('view_bag'))
-
 
 def remove_from_bag(request, isbn):
     """Remove the specified book out of the shopping bag"""
@@ -64,8 +65,11 @@ def remove_from_bag(request, isbn):
                 del bag[isbn][format]
                 if not bag[isbn]:
                     bag.pop(isbn)
+                messages.success(request, f'Removed {book.title} ({format}) from your bag')
             elif not format:
                 bag.pop(isbn)
+                messages.success(request, f'Removed {book.title} from your bag')
+
             request.session['bag'] = bag
             return HttpResponse(status=200)
         else:
