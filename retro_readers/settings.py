@@ -115,6 +115,9 @@ LOGIN_REDIRECT_URL = '/'
 
 WSGI_APPLICATION = 'retro_readers.wsgi.application'
 
+if os.path.isfile('env.py'): # environment variables
+    import env
+
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
@@ -174,6 +177,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
+#stripe
 FREE_DELIVERY_THRESHOLD = 25
 STANDARD_DELIVERY_PERCENTAGE = 10
+STRIPE_CURRENCY = 'gbp'
+STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC_KEY', '')
+STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY', '')
