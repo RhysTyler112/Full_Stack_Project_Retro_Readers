@@ -35,3 +35,17 @@
     color: #000;
     border: 1px solid #000;
 }
+
+.order-confirmation-wrapper p,
+.order-confirmation-wrapper span,
+.order-confirmation-wrapper small {
+    font-size: 1.2rem;
+}
+
+.order-confirmation-wrapper .font-weight-bold {
+    font-size: 1.2rem;
+}
+
+.order-confirmation-wrapper .text-black {
+    font-size: 1.2rem;
+}
