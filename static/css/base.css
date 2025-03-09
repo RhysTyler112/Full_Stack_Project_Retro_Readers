@@ -107,6 +107,10 @@ a.category-badge > span.badge:hover {
     object-fit: cover;
 }
 
+input[name='q']::placeholder {
+    color: #aab7c4;
+}
+
 /* ------------------------------- bootstrap toasts */
 
 .message-container {
