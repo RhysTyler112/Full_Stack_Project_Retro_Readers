@@ -82,3 +82,4 @@ class Books(models.Model):
         if prices:
             return min(prices)
         return None
+    
