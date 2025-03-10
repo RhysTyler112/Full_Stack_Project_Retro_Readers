@@ -54,7 +54,7 @@ def adjust_bag(request, isbn):
     return redirect(reverse('view_bag'))
 
 def remove_from_bag(request, isbn):
-    """Remove the specified book out of the shopping bag"""
+    """Remove the specified book format from the shopping bag"""
     book = get_object_or_404(Books, isbn=isbn)
     format = request.POST.get('format')
     bag = request.session.get('bag', {})
@@ -66,15 +66,12 @@ def remove_from_bag(request, isbn):
                 if not bag[isbn]:
                     bag.pop(isbn)
                 messages.success(request, f'Removed {book.title} ({format}) from your bag')
-            elif not format:
-                bag.pop(isbn)
-                messages.success(request, f'Removed {book.title} from your bag')
-
+            else:
+                messages.error(request, f'Format {format} not found in your bag for {book.title}')
             request.session['bag'] = bag
             return HttpResponse(status=200)
         else:
             return HttpResponse(status=404)
-    
     except Exception as e:
         messages.error(request, f'Error removing item: {e}')
         return HttpResponse(status=500)
