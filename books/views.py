@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.contrib import messages
 from django.db.models import Q, F
 from .models import Books, Category
+from .forms import BookForm
 
 def book_list(request):
     """A view that displays all books, including sorting and search queries"""
@@ -70,3 +71,17 @@ def book_detail(request, isbn):
         'book': book,
     }
     return render(request, "books/books_detail.html", context)
+
+
+
+def add_book(request):
+    """Add a book to the store"""
+   
+    form = BookForm()
+        
+    template = 'books/add_book.html'
+    context = {
+        'form': form,
+    }
+    
+    return render(request, template, context)

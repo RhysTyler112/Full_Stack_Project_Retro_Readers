@@ -28,7 +28,7 @@ class BookForm(forms.ModelForm):
         return cleaned_data
     
     
-class  bookform(forms.ModelForm):
+class  BookForm(forms.ModelForm):
     class Meta:
         model = Books
         fields = '__all__'
