@@ -87,6 +87,15 @@
                                             <input type="radio" name="format" id="audiobook" autocomplete="off" value="audiobook"> Audiobook - £{{ book.price_audiobook }}
                                         </label>
                                     {% endif %}
+
+                                </div>
+                                <div>
+                                    {% if request.user.is_authenticated %}
+                                        <small class="ml-3">
+                                            <a href="{% url 'edit_book' book.isbn %}">Edit</a>
+                                            <a href="{% url 'delete_book' book.isbn %}" class="text-danger">Delete</a>
+                                        </small>
+                                    {% endif %}
                                 </div>
                             </div>
                             <div class="col-12">

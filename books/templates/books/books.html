@@ -88,6 +88,12 @@
                                                 </p>
                                             {% endif%}
                                             <p class="text-muted small mb-0">by {{ book.author }} ({{ book.realised_date }})</p>
+                                            {% if request.user.is_authenticated %}
+                                                <small class="ml-3">
+                                                    <a href="{% url 'edit_book' book.isbn %}">Edit</a>
+                                                    <a href="{% url 'delete_book' book.isbn %}" class="text-danger">Delete</a>
+                                                </small>
+                                            {% endif %}
                                         </div>
                                     </div>
                                 </div>

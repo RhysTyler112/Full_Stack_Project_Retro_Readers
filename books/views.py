@@ -81,7 +81,7 @@ def add_book(request):
         if form.is_valid():
             form.save()
             messages.success(request, 'Successfully added book!')
-            return redirect(reverse('add_book'))
+            return redirect(reverse('book_detail', args=[form.instance.isbn]))
         else:
             messages.error(request, 'Failed to add book. Please ensure the form is valid.')
     else:
@@ -116,3 +116,10 @@ def edit_book(request, isbn):
     }
     
     return render(request, template, context)
+
+def delete_book(request, isbn):
+    """Delete a book from the store"""
+    book = get_object_or_404(Books, isbn=isbn)
+    book.delete()
+    messages.success(request, 'Book deleted!')
+    return redirect(reverse('books'))
