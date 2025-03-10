@@ -1,5 +1,5 @@
 from django import forms
-from .models import Books
+from .models import Books, Category
 
 class BookForm(forms.ModelForm):
     class Meta:
@@ -26,3 +26,18 @@ class BookForm(forms.ModelForm):
             cleaned_data["image_url"] = cleaned_data.get("image_url") or book.image_url
 
         return cleaned_data
+    
+    
+class  bookform(forms.ModelForm):
+    class Meta:
+        model = Books
+        fields = '__all__'
+        
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        categories = Category.objects.all()
+        friendly_names = [(c.id, c.get_friendly_name()) for c in categories]
+        
+        self.fields['category'].choices = friendly_names
+        for feild_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'border-black rounded-0'
