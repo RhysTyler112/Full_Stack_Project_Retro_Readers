@@ -188,16 +188,16 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 if 'USE_AWS' in os.environ:
-    #Bucket configuration
-    AWD_STORAGE_BUCKET_NAME = 'retro-readers'
+    # Bucket configuration
+    AWS_STORAGE_BUCKET_NAME = 'retro-readers'
     AWS_S3_REGION_NAME = 'eu-west-1'
     AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
 
-    #Tell django to use s3 storage
+    # Tell django to use s3 storage
     AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
     
-    #Static and media files
+    # Static and media files
     STATICFILES_STORAGE = 'custom_storages.StaticStorage'
     STATICFILES_LOCATION = 'static'
     DEFAULT_FILE_STORAGE = 'custom_storages.MediaStorage'
