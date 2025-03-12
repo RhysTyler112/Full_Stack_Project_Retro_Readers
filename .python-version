@@ -1,0 +1,2 @@
+rm runtime.txt
+echo "3.11" > .python-version
