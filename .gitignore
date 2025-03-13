@@ -4,4 +4,3 @@ env.py
 *.pyc
 __pycache__
 env.py
-retro-readers-staticfiles-users_accessKeys.csv
