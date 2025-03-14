@@ -3,6 +3,8 @@ import uuid
 from django.db import models
 from django.db.models import Sum
 from django.conf import settings 
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 
 from books.models import Books
 from profiles.models import UserProfile
@@ -49,6 +51,7 @@ class Order(models.Model):
             self.delivery_cost = 0
         self.grand_total = self.order_total + self.delivery_cost
         self.save()
+            
     
     def save(self, *args, **kwargs):
         '''
@@ -61,6 +64,7 @@ class Order(models.Model):
 
     def __str__(self):
         return self.order_number
+
 
 class OrderLineItem(models.Model):
     order = models.ForeignKey(Order, null=False, blank=False, on_delete=models.CASCADE, related_name='lineitems')
@@ -84,6 +88,10 @@ class OrderLineItem(models.Model):
             raise ValueError('Invalid format')
         
         super().save(*args, **kwargs)
+        
+    @receiver(pre_save, sender=Order)
+    def update_grand_total(sender, instance, **kwargs):
+        instance.grand_total = instance.order_total + instance.delivery_cost
 
     def __str__(self):
         return f'SKU {self.book.sku} on order {self.order.order_number}'
