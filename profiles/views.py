@@ -1,9 +1,10 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
-from .models import UserProfile
+from .models import UserProfile, Wishlist
 from .forms import UserProfileForm
+from books.models import Books
 
 from checkout.models import Order
 
@@ -48,3 +49,26 @@ def order_history(request, order_number):
     }
 
     return render(request, template, context)
+
+@login_required
+def add_to_wishlist(request, isbn):
+    book = get_object_or_404(Books, isbn=isbn)
+    wishlist, created = Wishlist.objects.get_or_create(user=request.user, book=book)
+    if created:
+        messages.success(request, f'Added {book.title} to your wishlist')
+    else:
+        messages.info(request, f'{book.title} is already in your wishlist')
+    return redirect('book_detail', isbn=isbn)
+
+@login_required
+def view_wishlist(request):
+    wishlist_items = Wishlist.objects.filter(user=request.user)
+    return render(request, 'profiles/wishlist.html', {'wishlist_items': wishlist_items})
+
+@login_required
+def remove_from_wishlist(request, isbn):
+    book = get_object_or_404(Books, isbn=isbn)
+    wishlist_item = get_object_or_404(Wishlist, user=request.user, book=book)
+    wishlist_item.delete()
+    messages.success(request, f'Removed {book.title} from your wishlist')
+    return redirect('view_wishlist')

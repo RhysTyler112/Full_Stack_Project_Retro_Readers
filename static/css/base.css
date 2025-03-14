@@ -277,6 +277,26 @@ input[name='q']::placeholder {
     border-radius: 0;
 }
 
+/* Wishlist */
+.wishlist-list {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.wishlist-item {
+    padding: 10px 15px;
+}
+
+.wishlist-item-content {
+    display: flex;
+    align-items: center;
+}
+
+.wishlist-book-cover {
+    width: 50px;
+    height: auto;
+    margin-right: 10px;
+}
 
 /* fixed top navbar only on medium and up */
 @media (min-width: 992px) {
