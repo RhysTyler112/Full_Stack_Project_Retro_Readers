@@ -86,7 +86,7 @@
                                                 <form method="POST" action="{% url 'remove_from_bag' item.book.isbn %}">
                                                     {% csrf_token %}
                                                     <input type="hidden" name="format" value="{{ item.format }}">
-                                                    <button type="submit" class="remove-item text-danger" id="remove_{{ item.item_id }}">
+                                                    <button type="submit" class="remove-item text-danger" id="remove_{{ item.item_id }}" data-format="{{ item.format }}">
                                                         <small>Remove</small>
                                                     </button>
                                                 </form>
@@ -146,16 +146,18 @@
 {{ block.super }}
 {% include 'books/includes/quantity_input_script.html' %}
 <script class="text/javascript">
-    //Update quantity on bag page
+    // Update quantity on bag page
     $('.update-link').click(function(e){
         var form = $(this).prev('.update-form');
         form.submit();
     });
-    //Remove item from bag
+
+    // Remove item from bag
     $('.remove-item').click(function(e){
-        var csrf_token = "{{ csrf_token }}"
+        e.preventDefault(); // Prevent the default form submission
+        var csrf_token = "{{ csrf_token }}";
         var item_id = $(this).attr('id').split('remove_')[1];
-        var format = $(this).attr('format');
+        var format = $(this).data('format'); // Use data() to get the format attribute
         var url = `/bag/remove/${item_id}/`;
         var data = {'csrfmiddlewaretoken': csrf_token, 'format': format};
 
