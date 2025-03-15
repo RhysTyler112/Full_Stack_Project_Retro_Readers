@@ -81,14 +81,16 @@
                                                     </div>
                                                 </div>
                                             </form>
-                                            <a class="update-link text-info"><small>Update</small></a>
-                                            <form method="POST" action="{% url 'remove_from_bag' item.book.isbn %}">
-                                                {% csrf_token %}
-                                                <input type="hidden" name="format" value="{{ item.format }}">
-                                                <button type="submit" class="remove-item text-danger float-right" id="remove_{{ item.item_id }}">
-                                                    <small>Remove</small>
-                                                </button>
-                                            </form> 
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <a class="update-link text-info"><small>Update</small></a>
+                                                <form method="POST" action="{% url 'remove_from_bag' item.book.isbn %}">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="format" value="{{ item.format }}">
+                                                    <button type="submit" class="remove-item text-danger" id="remove_{{ item.item_id }}">
+                                                        <small>Remove</small>
+                                                    </button>
+                                                </form>
+                                            </div> 
                                         </td>
                                         <td class="py-3">
                                             <p class="my-0">£{{ item.price | calc_subtotal:item.quantity }}</p>
