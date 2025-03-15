@@ -24,7 +24,17 @@
                                 <img class="card-img-top img-fluid" src="{{ MEDIA_URL }}noimage.png" alt="{{ book.title}}">
                             </a>
                     {% endif %}
+                    <br>
+                    {% if request.user.is_authenticated and request.user.is_superuser %}
+                        <div class="text-center mt-3">
+                            <small>
+                                <a href="{% url 'edit_book' book.isbn %}" class="edit-button">Edit</a>
+                                <a href="{% url 'delete_book' book.isbn %}" class="text-danger ml-2 delete-button">Delete</a>
+                            </small>
+                        </div>
+                    {% endif %}
                 </div>
+                
                 <div class="text-center">
                     <a href="{% url 'add_to_wishlist' book.isbn %}" class="btn btn-outline-black rounded-0">
                         <span class="icon">

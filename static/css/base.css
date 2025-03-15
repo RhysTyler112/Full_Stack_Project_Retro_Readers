@@ -167,8 +167,8 @@ input[name='q']::placeholder {
 }
 
 .toast-body {
-    background: #000000;
-    color: #ffffff;
+    background: #ffffff;
+    color: #000000;
     border: 1px solid #000;
     border-radius: 0;
 }
@@ -262,7 +262,21 @@ input[name='q']::placeholder {
 }
 
 
+/* Edit and delete buttons on book details */
 
+.edit-button {
+    background-color: #ffffff; 
+    border: black; 
+    padding: 0.5rem 0.5rem;
+    border-radius: 0.5rem;
+}
+
+.delete-button {
+    background-color: #ffffff; 
+    border: black; 
+    padding: 0.5rem 0.5rem;
+    border-radius: 0.5rem;
+}
 
 /* -------------------------------- Media Queries */
 
