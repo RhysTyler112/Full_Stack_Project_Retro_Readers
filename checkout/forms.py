@@ -4,16 +4,12 @@ from .models import Order
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ('full_name', 
-                  'email', 
-                  'phone_number', 
-                  'country', 
-                  'postcode', 
-                  'town_or_city', 
-                  'street_address1', 
-                  'street_address2', 
-                  'county')
-    
+        fields = ['full_name', 'email', 'phone_number', 'street_address1', 
+                  'street_address2', 'town_or_city', 'postcode', 'county', 'country']
+        widgets = {
+            'county': forms.TextInput(attrs={'class': 'form-control'}),
+            'country': forms.Select(attrs={'class': 'form-control'}),
+        }
     def __init__(self, *args, **kwargs):
         '''
         Add placeholders and classes, remove auto-generated labels
@@ -39,6 +35,6 @@ class OrderForm(forms.ModelForm):
                 else:
                     placeholder = placeholders[field]
             self.fields[field].widget.attrs['placeholder'] = placeholder
-            self.fields[field].widget.attrs['class'] = 'stripe-style-input'
+            self.fields[field].widget.attrs['class'] = 'stripe-style-input form-control'
             self.fields[field].label = False
         
