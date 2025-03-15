@@ -17,23 +17,17 @@
                 <h2 class="logo-font">Books</h2>
                 {% for c in current_categories %}
                 <a class="category-badge text-decoration-none" href="{% url 'books' %}?category={{ c.name }}{% if request.GET.format %}&format={{ request.GET.format }}{% endif %}">
-                    <span class="p-2 mt-2 badge badge-white text-black rounded-0 border border-dark">{{ c.friendly_name }}</span>
+                    <span class="p-2 mt-2 badge rounded-0 border border-dark">{{ c.friendly_name }}</span>
                 </a>
                 {% endfor %}
-            <br>
-            <div class="btn-group mt-3" role="group" aria-label="Filter by format">
-                <a href="{% url 'books' %}?format=softcover{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}" class="btn btn-primary">Softcover</a>
-                <a href="{% url 'books' %}?format=hardcover{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}" class="btn btn-secondary">Hardcover</a>
-                <a href="{% url 'books' %}?format=audiobook{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}" class="btn btn-success">Audiobook</a>
-            </div>
             <hr class="w-50 mb-1">
             </div>
         </div>
         <div class="row">
             <div class="product-container col-10 offset-1">
-                <div class="row mt-1 mb-2">
-                    <div class="col-12 col-md-6 my-auto order-md-last d-flex justify-content-center justify-content-md-end">
-                        <div class="sort-select-wrapper w-50">
+                <div class="row mt-1 mb-2 justify-content-center">
+                    <div class="col-12 col-md-5 d-flex justify-content-center justify-content-md-end mb-3 mb-md-0">
+                        <div class="sort-select-wrapper">
                             <select id="sort-selector" class="custom-select custom-select-sm rounded-0 border border-{% if current_sorting != 'None_None' %}info{% else %}black{% endif %}">
                                 <option value="reset" {% if current_sorting == 'None_None' %}selected{% endif %}>Sort by...</option>
                                 <option value="price_asc" {% if current_sorting == 'price_asc' %}selected{% endif %}>Price (high to low)</option>
@@ -44,7 +38,19 @@
                                 <option value="category_desc" {% if current_sorting == 'category_desc' %}selected{% endif %}>Category (Z-A)</option>
                             </select>
                         </div>
-                    </div>   
+                    </div>
+                    <div class="col-12 col-md-5 d-flex justify-content-center justify-content-md-start">
+                        <div class="dropdown">
+                            <button class="btn btn-outline-black dropdown-toggle w-100" type="button" id="formatDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Filter by format
+                            </button>
+                            <div class="dropdown-menu " aria-labelledby="formatDropdown">
+                                <a class="dropdown-item" href="{% url 'books' %}?format=softcover{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}">Softcover</a>
+                                <a class="dropdown-item" href="{% url 'books' %}?format=hardcover{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}">Hardcover</a>
+                                <a class="dropdown-item" href="{% url 'books' %}?format=audiobook{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}">Audiobook</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="col-12 col-md-6 order-md-first">
                     <p class="text-black mt-3 text-center text-md-left">

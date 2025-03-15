@@ -26,7 +26,7 @@
                     {% endif %}
                 </div>
                 <div class="text-center">
-                    <a href="{% url 'add_to_wishlist' book.isbn %}" class="btn btn-outline-black rounded-0 mt-5">
+                    <a href="{% url 'add_to_wishlist' book.isbn %}" class="btn btn-outline-black rounded-0">
                         <span class="icon">
                             <i class="fas fa-heart"></i>
                         </span>
@@ -36,27 +36,29 @@
             </div>
             <div class="col-12 col-md-6 col-lg-4">
                 <div class="product-details-container mb-5 mt-md-5">
-                    <p class="mb-0">{{ book.title }}</p>
+                    <p class="mb-0 text-center">{{ book.title }}</p>
+                    <br>
                     {% if book.category %}
-                        <p class="small mt-1 mb-0">
-                            <a class="text-muted" href="{% url 'books' %}?category={{ book.category.name}}">
+                        <p class="small mt-1 mb-0 text-center">
+                            <a class="text-black" href="{% url 'books' %}?category={{ book.category.name}}">
                                 <i class="fa-solid fa-quote-left mr-1"> {{ book.category.friendly_name }}</i>
                                 <i class="fa-solid fa-quote-right"></i>                            
                             </a>
                         </p>
                     {% endif%}
-                    <p class="text-muted small mb-0">by {{ book.author }} ({{ book.realised_date }})</p>
+                    <p class="text-black small mb-0 text-center">by {{ book.author }} ({{ book.realised_date }})</p>
                     <br>
-                    <p class="mt-3">{{ book.description }}</p>
+                    <p class="mt-3 description">{{ book.description }}</p>
                     <br>
                     <form class="form" action="{% url 'add_to_bag' book.isbn %}" method="POST">
                         {% csrf_token %}
+                        <input type="hidden" name="format" id="selectedFormat" value="">
                         <div class="form-row">
-                            <div class="col-12">
+                            <div class="col-12 text-center">
                                 <p class="mt-3"><strong>Quantity:</strong></p>
-                                <div class="form-group w-50">
+                                <div class="form-group w-50 mx-auto">
                                     <div class="input-group">
-                                        <div class="input-group-prepend">
+                                        <div class="input-group-prepend text-center">
                                             <button class="decrement-qty btn btn-black rounded-0"
                                             data-item_id="{{ book.isbn }}" id="decrement-qty_{{ book.isbn}}">
                                                 <span class="icon">
@@ -67,7 +69,7 @@
                                         <input class="form-control qty_input" type="number" 
                                             name="quantity" value="1" min="1" max="99" 
                                             data-item_id="{{ book.isbn }}" id="id_qty_{{ book.isbn }}">
-                                        <div class="input-group-apppend">    
+                                        <div class="input-group-append">    
                                             <button class="increment-qty btn btn-black rounded-0"
                                                 data-item_id="{{ book.isbn }}" id="increment-qty_{{ book.isbn }}">
                                                 <span class="icon">
@@ -79,34 +81,30 @@
                                 </div>
                             </div>
                             <div class="col-12">
-                                <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                                    {% if book.price_softcover %}
-                                        <label class="btn btn-primary">
-                                            <input type="radio" name="format" id="softcover" autocomplete="off" value="softcover"> Softcover - £{{ book.price_softcover }}
-                                        </label>
-                                    {% endif %}
-                                    {% if book.price_hardcover %}
-                                        <label class="btn btn-secondary">
-                                            <input type="radio" name="format" id="hardcover" autocomplete="off" value="hardcover"> Hardcover - £{{ book.price_hardcover }}
-                                        </label>
-                                    {% endif %}
-                                    {% if book.price_audiobook %}
-                                        <label class="btn btn-success">
-                                            <input type="radio" name="format" id="audiobook" autocomplete="off" value="audiobook"> Audiobook - £{{ book.price_audiobook }}
-                                        </label>
-                                    {% endif %}
-
-                                </div>
-                                <div>
-                                    {% if request.user.is_authenticated and request.user.is_superuser %}
-                                        <small class="ml-3">
-                                            <a href="{% url 'edit_book' book.isbn %}">Edit</a>
-                                            <a href="{% url 'delete_book' book.isbn %}" class="text-danger">Delete</a>
-                                        </small>
-                                    {% endif %}
+                                <div class="dropdown text-center">
+                                    <button class="btn btn-outline-black dropdown-toggle" type="button" id="formatDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Select Format
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="formatDropdown">
+                                        {% if book.price_softcover %}
+                                            <a class="dropdown-item" href="#" onclick="selectFormat('softcover', {{ book.price_softcover }})">
+                                                Softcover - £{{ book.price_softcover }}
+                                            </a>
+                                        {% endif %}
+                                        {% if book.price_hardcover %}
+                                            <a class="dropdown-item" href="#" onclick="selectFormat('hardcover', {{ book.price_hardcover }})">
+                                                Hardcover - £{{ book.price_hardcover }}
+                                            </a>
+                                        {% endif %}
+                                        {% if book.price_audiobook %}
+                                            <a class="dropdown-item" href="#" onclick="selectFormat('audiobook', {{ book.price_audiobook }})">
+                                                Audiobook - £{{ book.price_audiobook }}
+                                            </a>
+                                        {% endif %}
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-12">
+                            <div class="col-12 text-center">
                                 <a href="{% url 'books' %}" class="btn btn-outline-black rounded-0 mt-5">
                                     <span class="icon">
                                         <i class="fas fa-chevron-left"></i>
@@ -132,9 +130,11 @@
 
 <script type="text/javascript">
     function selectFormat(format, price) {
-        // Handle the format selection logic here
-        console.log(`Selected format: ${format}, Price: £${price}`);
-        // You can add more logic to handle the selection, such as updating a hidden form field or redirecting to a checkout page
+        // Update the dropdown button text with the selected format and price
+        document.getElementById('formatDropdown').innerText = `${format.charAt(0).toUpperCase() + format.slice(1)} - £${price}`;
+        
+        // Update the hidden input field with the selected format
+        document.getElementById('selectedFormat').value = format;
     }
 </script>
 {% endblock %}

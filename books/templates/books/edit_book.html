@@ -11,32 +11,31 @@
 
 {% block content %}
     <div class="overlay"></div>
-    <div class="container">
-        <div class="row">
-            <div class="col-12 col-md-6">
-                <hr>
-                <h2 class="logo-font mb-4">Product Management</h2>
-                <h5 class="text-muted">Edit book</h5>
-                <hr>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-12 col-md-6">
-                <form method="POST" action="{% url 'edit_book' book.isbn %}" class="form mb-2" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    {% for field in form %}
-                        {% if field.name != 'image' %}
-                            {{ field | as_crispy_field }}
-                        {% else %}
-                            {{ field }}
-                        {% endif %}
-                    {% endfor %}
-                    <div class="text-right">
-                        <a class="btn btn-outline-black rounded-0" href="{% url 'books' %}">Cancel</a>
-                        <button class="btn btn-black rounded-0" type="submit">Update Book</button>
+    <div class="container d-flex justify-content-center align-items-center mt-5">
+        <div class="row w-100">
+            <div class="col-12 col-md-8 col-lg-6 mx-auto">
+                <div class="card shadow-lg p-4">
+                    <div class="card-body">
+                        <h2 class="logo-font mb-4 text-center">Product Management</h2>
+                        <h5 class="text-black text-center">Edit book</h5>
+                        <hr>
+                        <form method="POST" action="{% url 'edit_book' book.isbn %}" class="form mb-2 text-center" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {% for field in form %}
+                                {% if field.name != 'image' %}
+                                    {{ field | as_crispy_field }}
+                                {% else %}
+                                    {{ field }}
+                                {% endif %}
+                            {% endfor %}
+                            <br>
+                            <div class="d-flex justify-content-between">
+                                <a class="btn btn-outline-black rounded-0" href="{% url 'books' %}">Cancel</a>
+                                <button class="btn btn-black rounded-0" type="submit">Update Book</button>
+                            </div>
+                        </form>
                     </div>
-                </form>
+                </div>
             </div>            
         </div>
     </div>

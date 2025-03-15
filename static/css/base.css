@@ -136,18 +136,17 @@ input[name='q']::placeholder {
 /* Set a fixed size for book images */
 .book-image-list {
     width: 100%;
-    height: 600px; /* Adjust the height as needed */
-    object-fit: cover; /* Ensure the image covers the entire area without distortion */
+    height: 600px; 
+    object-fit: cover;
 }
 
 /* Semi-transparent white background */
 .transparent-box {
-    background-color: rgba(255, 255, 255, 0.6); /* White with 80% opacity */
-    padding: 10px; /* Add some padding */
-    border-radius: 5px; /* Optional: Add rounded corners */
-    display: inline-block; /* Ensure the box only takes up as much space as needed */
+    background-color: rgba(255, 255, 255, 0.6); 
+    padding: 10px; 
+    border-radius: 5px; 
+    display: inline-block; 
 }
-
 
 
 /* ------------------------------- bootstrap toasts */
@@ -231,6 +230,39 @@ input[name='q']::placeholder {
     overflow-x: hidden;
     overflow-y: auto;
 }
+
+/* Description */
+.description {
+    background-color: rgba(255, 255, 255, 0.2); 
+    padding: 10px; 
+    border-radius: 5px; 
+    display: inline-block;
+}
+
+
+
+/* Custom styles for the format dropdown button */
+#formatDropdown {
+    padding: 1rem 2rem; 
+    font-size: 0.9rem; 
+    border-radius: 0.5rem;
+
+}
+
+#formatDropdown:hover {
+    background-color: #201321; 
+    color: #fff; 
+}
+
+/* Style for category badges */
+.category-badge .badge {
+    background-color: black; /* Black background */
+    color: white; /* White text */
+    transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+
+
 
 /* -------------------------------- Media Queries */
 
