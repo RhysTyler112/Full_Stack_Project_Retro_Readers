@@ -271,12 +271,24 @@ input[name='q']::placeholder {
     border-radius: 0.5rem;
 }
 
-.delete-button {
+.delete-button{
     background-color: #ffffff; 
     border: black; 
     padding: 0.5rem 0.5rem;
     border-radius: 0.5rem;
 }
+
+
+/* Update qty in bag button*/
+.update-link-custom {
+    background-color: white;
+    border: 1px solid black;
+    padding: 2px 5px;
+    border-radius: 3px;
+    text-decoration: none;
+}
+
+
 
 /* -------------------------------- Media Queries */
 
@@ -456,4 +468,21 @@ input[name='q']::placeholder {
     .price-and-wishlist {
         margin-right: 0.5rem; 
     }
+
+
+
+
+
+    /* Hide bag table headere */
+    .bag-table-header{
+        display: none;
+    }
+
+    /* Ensure the title is visible */
+    .logo-font {
+        font-size: 18px;
+        margin-top: 150px;
+    }
+
 }
+

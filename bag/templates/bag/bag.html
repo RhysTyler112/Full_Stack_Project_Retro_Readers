@@ -16,17 +16,17 @@
         <div class="row">
             <div class="col">
                 <hr>
-                <h2 class="logo-font mb-4">Shopping Bag</h2>
+                <h2 class="logo-font mb-4 text-center">Shopping Bag</h2>
                 <hr>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-md-12">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
                 {% if bag_items %}
                     <div class="table-responsive rounded">
-                        <table class="table">
-                            <thead>
+                        <table class="table text-black">
+                            <thead class="bag-table-header">
                                 <tr>
                                     <th scope="col">Book Info</th>
                                     <th scope="col"></th>
@@ -37,7 +37,7 @@
                             </thead>
                             <tbody>
                                 {% for item in bag_items %}
-                                    <tr>
+                                    <tr class="d-block d-md-table-row text-center">
                                         <td class="p-3 w-25">
                                             {% if item.book.image_url %}
                                                 <img src="{{ item.book.image_url }}" alt="{{ item.book.title }}" class="img-fluid rounded book-image">
@@ -45,15 +45,15 @@
                                                 <img src="{% static 'images/default_book_image.jpg' %}" alt="{{ item.book.title }}" class="img-fluid rounded book-image">
                                             {% endif %}
                                         </td>
-                                        <td class="py-3"> 
-                                           <p class="my-0"> <strong>{{ item.book.title }}</strong></p>
-                                           <p class="my-0 small ">Book Type:{{ item.format|upper }}</p>
-                                           <p class="my-0 small text-muted">SKU:{{ item.book.sku|upper }}</p>
+                                        <td class="py-3 d-block d-md-table-cell">
+                                            <p class="my-0"><strong>{{ item.book.title }}</strong></p>
+                                            <p class="my-0 small">Book Type: {{ item.format|upper }}</p>
+                                            <p class="my-0 small text-black">SKU: {{ item.book.sku|upper }}</p>
                                         </td>
-                                        <td class="py-3">
+                                        <td class="py-3 d-block d-md-table-cell">
                                             <p class="my-0">£{{ item.price }}</p>
                                         </td>
-                                        <td class="py-3">
+                                        <td class="py-3 d-block d-md-table-cell">
                                             <form class="form update-form" method="POST" action="{% url 'adjust_bag' item.book.isbn %}">
                                                 {% csrf_token %}
                                                 <div class="form-group">
@@ -82,7 +82,7 @@
                                                 </div>
                                             </form>
                                             <div class="d-flex justify-content-between align-items-center">
-                                                <a class="update-link text-info"><small>Update</small></a>
+                                                <a class="update-link update-link-custom text-info" data-item_id="{{ item.item_id }}"><small>Update</small></a>
                                                 <form method="POST" action="{% url 'remove_from_bag' item.book.isbn %}">
                                                     {% csrf_token %}
                                                     <input type="hidden" name="format" value="{{ item.format }}">
@@ -90,9 +90,9 @@
                                                         <small>Remove</small>
                                                     </button>
                                                 </form>
-                                            </div> 
+                                            </div>
                                         </td>
-                                        <td class="py-3">
+                                        <td class="py-3 d-block d-md-table-cell">
                                             <p class="my-0">£{{ item.price | calc_subtotal:item.quantity }}</p>
                                         </td>
                                     </tr>
@@ -103,7 +103,7 @@
                                         <h6>Delivery: £{{ delivery|floatformat:2 }}</h6>
                                         <h4 class="mt-4"><strong>Grand Total: £{{ grand_total|floatformat:2 }}</strong></h4>
                                         {% if free_delivery_delta > 0 %}
-                                            <p class="mb-1 text-danger">
+                                            <p class="mb-1 text-warning">
                                                 You could get free delivery by spending just <strong>£{{ free_delivery_delta }}</strong> more!
                                             </p>
                                         {% endif %}
@@ -129,13 +129,15 @@
                         </table>
                     </div>
                 {% else %}
-                    <p class="lead mb-5">Your bag is empty</p>
-                    <a href="{% url 'books' %}" class="btn btn-outline-black rounded-0 btn-lg">
-                        <span class="icon">
-                            <i class="fas fa-arrow-left"></i>
-                        </span>
-                        <span class="text-uppercase">Continue Shopping</span>
-                    </a>
+                    <p class="lead mb-5 text-center">Your bag is empty</p>
+                    <div class="text-center">
+                        <a href="{% url 'books' %}" class="btn btn-outline-black rounded-0 btn-lg">
+                            <span class="icon">
+                                <i class="fas fa-arrow-left"></i>
+                            </span>
+                            <span class="text-uppercase">Continue Shopping</span>
+                        </a>
+                    </div>
                 {% endif %}
             </div>
         </div>
@@ -148,7 +150,9 @@
 <script class="text/javascript">
     // Update quantity on bag page
     $('.update-link').click(function(e){
-        var form = $(this).prev('.update-form');
+        e.preventDefault();
+        var item_id = $(this).data('item_id');
+        var form = $('#id_qty_' + item_id).closest('form');
         form.submit();
     });
 
