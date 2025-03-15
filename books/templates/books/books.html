@@ -47,9 +47,9 @@
                     </div>   
                 </div>
                 <div class="col-12 col-md-6 order-md-first">
-                    <p class="text-muted mt-3 text-center text-md-left">
+                    <p class="text-black mt-3 text-center text-md-left">
                         {% if search_term or current_categories or current_sorting != 'None_None' %}
-                            <span class="small"><a href="{% url 'books' %}">Books Home</a> | </span>
+                            <span class="small"><a href="{% url 'books' %}" class="text-black ">Books Home</a> | </span>
                         {% endif %}
                         {{ books|length }} Books{% if search_term %} found for <strong>"{{ search_term }}"</strong>{% endif %}
                     </p>
@@ -60,11 +60,11 @@
                             <div class="card h-100 border-0">
                                 {% if book.image_url %}
                                 <a href="{% url 'book_detail' book.isbn %}">
-                                    <img class="card-img-top img-fluid" src="{{ book.image_url }}" alt="{{ book.title }}">
+                                    <img class="card-img-top img-fluid .book-image-list " src="{{ book.image_url }}" alt="{{ book.title }}">
                                 </a>
                                 {% else %}
-                                <a href="">
-                                    <img class="card-img-top img-fluid" src="{{ MEDIA_URL }}noimage.png" alt="{{ book.title}}">
+                                <a href="{% url 'book_detail' book.isbn %}">
+                                    <img class="card-img-top img-fluid .book-image-list " src="{{ MEDIA_URL }}noimage.png" alt="{{ book.title}}">
                                 </a>
                                 {% endif %}
                                 <div class="card-body pb-0">
@@ -74,18 +74,18 @@
                                     <div class="row">
                                         <div class="col">
                                             {% if book.get_lowest_price %}
-                                                <div class="d-flex justify-content-between align-items-center">
-                                                    <p class="lead mb-0 text-left font-weight-bold">£{{ book.get_lowest_price }}</p>
-                                                    <a href="{% url 'add_to_wishlist' book.isbn %}" class="btn btn-outline-black rounded-0">
-                                                        <span class="icon">
-                                                            <i class="fas fa-heart"></i>
-                                                        </span>
-                                                        <span class="text-uppercase">Add to Wishlist</span>
-                                                    </a>
-                                                </div>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <p class="lead mb-0 text-left font-weight-bold price-and-wishlist">£{{ book.get_lowest_price }}</p>
+                                                <a href="{% url 'add_to_wishlist' book.isbn %}" class="btn btn-outline-black rounded-0">
+                                                    <span class="icon">
+                                                        <i class="fas fa-heart"></i>
+                                                    </span>
+                                                    <span class="text-uppercase">Add to Wishlist</span>
+                                                </a>
+                                            </div>
                                             {% else %}
                                             <div class="d-flex justify-content-between align-items-center">
-                                                <p class="lead mb-0 text-left font-weight-bold">Price not available</p>
+                                                <p class="lead mb-0 text-left font-weight-bold price-and-wishlist">£{{ book.get_lowest_price }}</p>
                                                 <a href="{% url 'add_to_wishlist' book.isbn %}" class="btn btn-outline-black rounded-0">
                                                     <span class="icon">
                                                         <i class="fas fa-heart"></i>
@@ -97,13 +97,13 @@
                                             <br>
                                             {% if book.category %}
                                                 <p class="small mt-1 mb-0">
-                                                    <a class="text-muted" href="{% url 'books' %}?category={{ book.category.name}}">
+                                                    <a class="text-black" href="{% url 'books' %}?category={{ book.category.name}}">
                                                         <i class="fa-solid fa-quote-left mr-1"> {{ book.category.friendly_name }}</i>
                                                         <i class="fa-solid fa-quote-right"></i>
                                                     </a>
                                                 </p>
                                             {% endif%}
-                                            <p class="text-muted small mb-0">by {{ book.author }} ({{ book.realised_date }})</p>
+                                            <p class="text-black small mb-0">by {{ book.author }} ({{ book.realised_date }})</p>
                                             {% if request.user.is_authenticated and request.user.is_superuser %}
                                                 <small class="ml-3">
                                                     <a href="{% url 'edit_book' book.isbn %}">Edit</a>
