@@ -19,3 +19,9 @@
     max-height: 416px;
     overflow-y: auto;
 }
+
+@media (max-width: 320px) {
+    .placeholder {
+        margin-top: 500px; /* Adjust the value as needed */
+    }
+}
