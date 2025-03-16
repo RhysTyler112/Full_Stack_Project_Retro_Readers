@@ -288,7 +288,9 @@ input[name='q']::placeholder {
     text-decoration: none;
 }
 
-
+.allauth-area {
+    background: rgba(97, 97, 97, 0.4)
+}
 
 /* -------------------------------- Media Queries */
 
