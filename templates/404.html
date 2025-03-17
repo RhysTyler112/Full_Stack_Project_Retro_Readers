@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block corecss %}
+
+<link rel="stylesheet" href="{% static 'css/base.css' %}">
+
+{% endblock %}
 
 {% block page_header %}
     <div class="container header-container">
@@ -13,6 +18,7 @@
 {% block title %}404 - Page Not Found{% endblock title %}
 
 {% block content %}
+<div class="overlay"></div>
 <div class="container error-container">
     <div class="row">
         <div class="col-12 text-center">
