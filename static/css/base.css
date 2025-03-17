@@ -292,6 +292,34 @@ input[name='q']::placeholder {
     background: rgba(97, 97, 97, 0.4)
 }
 
+.error-container {
+    padding: 50px 0;
+}
+
+.error-code {
+    font-size: 100px;
+    font-weight: bold;
+    color: #ff0000;
+}
+
+.error-message {
+    font-size: 24px;
+    margin: 20px 0;
+}
+
+.btn-home {
+    background-color: #000;
+    color: #fff;
+    padding: 10px 20px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.btn-home:hover {
+    background-color: #444;
+}
+
 /* -------------------------------- Media Queries */
 
 /* Slightly larger container on xl screens */
