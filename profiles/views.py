@@ -63,6 +63,8 @@ def add_to_wishlist(request, isbn):
 @login_required
 def view_wishlist(request):
     wishlist_items = Wishlist.objects.filter(user=request.user)
+    if not wishlist_items.exists():
+        messages.info(request, 'Your wishlist is currently empty.')
     return render(request, 'profiles/wishlist.html', {'wishlist_items': wishlist_items})
 
 @login_required
