@@ -12,6 +12,12 @@ def add_to_bag(request, isbn):
     quantity = int(request.POST.get('quantity'))
     format = request.POST.get('format')
     redirect_url = request.POST.get('redirect_url')
+
+    # Ensure a format is selected
+    if not format:
+        messages.error(request, 'Please select a format before adding the book to your bag.')
+        return redirect(redirect_url)
+
     bag = request.session.get('bag', {})
 
     if isbn in bag:
