@@ -8,6 +8,7 @@ from books.models import Books
 
 from checkout.models import Order
 
+
 @login_required
 def profile(request):
     """ Display the user's profile. """
@@ -50,6 +51,7 @@ def order_history(request, order_number):
 
     return render(request, template, context)
 
+
 @login_required
 def add_to_wishlist(request, isbn):
     book = get_object_or_404(Books, isbn=isbn)
@@ -60,12 +62,14 @@ def add_to_wishlist(request, isbn):
         messages.info(request, f'{book.title} is already in your wishlist')
     return redirect('book_detail', isbn=isbn)
 
+
 @login_required
 def view_wishlist(request):
     wishlist_items = Wishlist.objects.filter(user=request.user)
     if not wishlist_items.exists():
         messages.info(request, 'Your wishlist is currently empty.')
     return render(request, 'profiles/wishlist.html', {'wishlist_items': wishlist_items})
+
 
 @login_required
 def remove_from_wishlist(request, isbn):
