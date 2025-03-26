@@ -333,3 +333,20 @@ A few contrast errors and missing labels
 | 505 page - home button.                               | Redirects to the homepage.                                                                                            | Pass   |
 
 <br><br>
+
+# Bugs and fixes
+
+### Submit payment overlay not showing
+- Decided to remove it all together.
+### Check out input bars were not filling div 100%
+- Overide CSS to fix this issue 
+### Open Liabry was not pulling all data need or correctly
+- Made the book details fully ediable so any errors or missed data could be fixed
+### AWS was not loading images or Favicon
+- Update the url contection point from {% media %} to {% static %}
+### When delete book from bag all formats were being delete instead of the one intended
+- Update code to make sure this does not happen 
+### You could add a book to bag with selecting format that casued 500 error on checkout
+- Put safe guarnd and alert message to enure a format has to be selected.
+### On checkout success totals are not calculating on deployed site, works find locally
+- Have not been able to solve this issue.
