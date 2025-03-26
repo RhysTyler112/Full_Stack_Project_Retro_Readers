@@ -75,11 +75,11 @@ All pages pass HTML Validation at [W3C markup validation service](https://valida
 <br>
 <img src="static/README/Testing pics/checkout-checker.png">
 
-<summary>Checkout Succsess</summary>
+<summary>Checkout Success</summary>
 <br>
 <img src="static/README/Testing pics/checkout-success-checker.png">
 
-<summary>My Pofile</summary>
+<summary>My Profile</summary>
 <br>
 <img src="static/README/Testing pics/profile-checker.png">
 
@@ -96,10 +96,10 @@ All pages pass CSS Validation at [W3C CSS validation service](https://jigsaw.w3.
 
 ## JS Validation
 
-Custom JS script file run through [JShint](https://jshint.com/) for validation. Shows undefined variables due to jQery "$".
+Custom JS script file run through [JShint](https://jshint.com/) for validation. Shows undefined variables due to jQuery "$".
 
 
-<summary>Country Feild</summary>
+<summary>Country Field</summary>
 <br>
 <img src="static/README/Testing pics/country-feild-js-checker.png">
 <br><br>
@@ -158,7 +158,7 @@ A sample of Python files run through CI PEP8 Linter and pass with no warnings, w
 <br>
 <img src="static/README/lighthouse/registar.png">
 
-<summary>Books - This has been affect by the books cover loading for an external source</summary>
+<summary>Books - This has been affected by the books cover loading for an external source</summary>
 <br>
 <img src="static/README/lighthouse/books.png">
 
@@ -178,11 +178,11 @@ A sample of Python files run through CI PEP8 Linter and pass with no warnings, w
 <br>
 <img src="static/README/lighthouse/checkout.png">
 
-<summary>Checkout Succsess</summary>
+<summary>Checkout Success</summary>
 <br>
 <img src="static/README/lighthouse/checkout-success.png">
 
-<summary>My Pofile</summary>
+<summary>My Profile</summary>
 <br>
 <img src="static/README/lighthouse/profile.png">
 
@@ -234,11 +234,11 @@ A few contrast errors and missing labels
 <br>
 <img src="static/README/wave/checkout.png">
 
-<summary>Checkout Succsess</summary>
+<summary>Checkout Success</summary>
 <br>
 <img src="static/README/wave/checkout-success.png">
 
-<summary>My Pofile</summary>
+<summary>My Profile</summary>
 <br>
 <img src="static/README/wave/profile.png">
 <br>
@@ -250,9 +250,9 @@ A few contrast errors and missing labels
 
 | User Story                                                                                | Feature                                                                                                                                    |
 | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| I can create new classes so that members can book them.                                   | Form on the admin panel to create new class.                                                                                                   |
-| I can view and manage all bookings so that issues or conflicts can be handled.            | On the admin panel a list of all bookings made for all users, with delete button if customer can not make it.                             |
-| I can delete a class so that it can not be booked if it is no longer offered.             | A delete button with confirmation next to every class with in the admin panel.                                                             |
+| I can create new classes so that members can book them.                                   | Form on the admin panel to create a new class.                                                                                                   |
+| I can view and manage all bookings so that issues or conflicts can be handled.            | On the admin panel a list of all bookings made for all users, with a delete button if customer can not make it.                             |
+| I can delete a class so that it can not be booked if it is no longer offered.             | A delete button with confirmation next to every class within the admin panel.                                                             |
 | I can edit class information so that I can update if any changes occur.                         | Next to every class a edit button exists so form can be accessed and updated.                                                               |
 <br><br>
 
@@ -339,14 +339,14 @@ A few contrast errors and missing labels
 ### Submit payment overlay not showing
 - Decided to remove it all together.
 ### Check out input bars were not filling div 100%
-- Overide CSS to fix this issue 
-### Open Liabry was not pulling all data need or correctly
-- Made the book details fully ediable so any errors or missed data could be fixed
+- Override CSS to fix this issue 
+### Open Library was not pulling all data need or correctly
+- Made the book details fully editable so any errors or missed data could be fixed
 ### AWS was not loading images or Favicon
-- Update the url contection point from {% media %} to {% static %}
+- Update the url connection point from {% media %} to {% static %}
 ### When delete book from bag all formats were being delete instead of the one intended
 - Update code to make sure this does not happen 
-### You could add a book to bag with selecting format that casued 500 error on checkout
-- Put safe guarnd and alert message to enure a format has to be selected.
+### You could add a book to bag with selecting format that causes 500 error on checkout
+- Put a safe guard and alert message to ensure a format has to be selected.
 ### On checkout success totals are not calculating on deployed site, works find locally
 - Have not been able to solve this issue.
