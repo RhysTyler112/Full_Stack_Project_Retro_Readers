@@ -12,18 +12,20 @@ var stripe = Stripe(stripePublicKey);
 var elements = stripe.elements();
 var style = {
     base: {
-        color: '#000',
-        fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
-        fontSmoothing: 'antialiased',
+        color: '#000', // Black text
+        fontFamily: '"Roboto", "Helvetica", sans-serif',
         fontSize: '16px',
         '::placeholder': {
-            color: '#aab7c4'
-        }
+            color: '#888', // Placeholder text color
+        },
+        backgroundColor: '#fff', // White background
+        border: '1px solid #ccc', // Border color
+        borderRadius: '5px', // Rounded corners
+        padding: '10px', // Padding inside the input
     },
     invalid: {
-        color: '#dc3545',
-        iconColor: '#dc3545'
-    }
+        color: '#e5424d', // Red text for invalid input
+    },
 };
 var card = elements.create('card', {style: style});
 card.mount('#card-element');

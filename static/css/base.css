@@ -367,7 +367,7 @@ input[name='q']::placeholder {
 }
 
 .allauth-form-inner-content input::placeholder {
-    color: #aab7c4;
+    color: #313131;
 }
 
 .allauth-form-inner-content button,
@@ -401,11 +401,10 @@ input[name='q']::placeholder {
 }
 
 .allauth-form-inner-content a {
-	color: #17a2b8; /* text-info */
+	color: #ffe700; /* text-info */
 }
 
 /* Product Form */
-
 .btn-file {
     position: relative;
     overflow: hidden;

@@ -22,16 +22,31 @@
 }
 
 .stripe-style-input::placeholder {
-    color: #aab7c4;
+  color: #020202;
 }
 
 .fieldset-label {
-    position: relative;
-    right: .5rem;
+  position: relative;
+  right: .5rem;
 }
 
 #payment-form .form-control,
 #card-element {
-    color: #000;
-    border: 1px solid #000;
+  color: #000;
+  border: 1px solid #000;
+}
+
+#card-element {
+  background-color: #fff; /* White background */
+  border: 1px solid #ccc; /* Light gray border */
+  border-radius: 5px; /* Rounded corners */
+  padding: 10px; /* Padding inside the input */
+  font-size: 16px; /* Font size */
+  color: #000; /* Black text */
+}
+
+#card-errors {
+  color: #e5424d; /* Red text for errors */
+  font-size: 14px;
+  margin-top: 5px;
 }
