@@ -354,7 +354,7 @@ input[name='q']::placeholder {
 
 .allauth-form-inner-content p {
     margin-top: 1.5rem; 
-    color: #6c757d; 
+    color: #ffc107; 
 }
 
 .allauth-form-inner-content input {
