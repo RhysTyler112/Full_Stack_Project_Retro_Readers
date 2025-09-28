@@ -2,6 +2,7 @@ from django.http import HttpResponse
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.conf import settings
+import logging
 
 from .models import Order, OrderLineItem
 from books.models import Books
@@ -11,6 +12,9 @@ import json
 import time
 import stripe
 
+# Set up logging for webhook failures
+logger = logging.getLogger(__name__)
+
 class StripeWH_Handler:
     """Handle Stripe webhooks"""
 
@@ -19,21 +23,59 @@ class StripeWH_Handler:
         
     def _send_confirmation_email(self, order):
         """Send the user a confirmation email"""
-        cust_email = order.email
-        subject = render_to_string(
-            'checkout/confirmation_emails/confirmation_email_subject.txt',
-            {'order': order}
-        )
-        body = render_to_string(
-            'checkout/confirmation_emails/confirmation_email_body.txt',
-            {'order': order, 'contact_email': settings.DEFAULT_FROM_EMAIL}
-        )
-        send_mail(
-            subject,
-            body,
-            settings.DEFAULT_FROM_EMAIL,
-            [cust_email]
-        )
+        try:
+            # Check if email already sent
+            if order.email_sent:
+                return
+                
+            cust_email = order.email
+            subject = render_to_string(
+                'checkout/confirmation_emails/confirmation_email_subject.txt',
+                {'order': order}
+            )
+            body = render_to_string(
+                'checkout/confirmation_emails/confirmation_email_body.txt',
+                {'order': order, 'contact_email': settings.DEFAULT_FROM_EMAIL}
+            )
+            send_mail(
+                subject,
+                body,
+                settings.DEFAULT_FROM_EMAIL,
+                [cust_email]
+            )
+            # Mark email as sent to prevent duplicates
+            order.email_sent = True
+            order.save()
+            
+        except Exception as e:
+            logger.error(f'Failed to send confirmation email for order {order.order_number}: {str(e)}')
+            # Send alert email to admin
+            self._send_admin_alert(order, f'Email sending failed: {str(e)}')
+    
+    def _send_admin_alert(self, order, error_message):
+        """Send alert email to admin about webhook/email failures"""
+        try:
+            admin_email = getattr(settings, 'ADMIN_EMAIL', settings.DEFAULT_FROM_EMAIL)
+            subject = f'Webhook/Email Alert - Order {order.order_number}'
+            body = f"""
+            Alert: Issue with order {order.order_number}
+            
+            Customer: {order.full_name}
+            Email: {order.email}
+            Error: {error_message}
+            
+            Please check the order and manually send confirmation if needed.
+            """
+            
+            send_mail(
+                subject,
+                body,
+                settings.DEFAULT_FROM_EMAIL,
+                [admin_email],
+                fail_silently=True
+            )
+        except Exception as e:
+            logger.error(f'Failed to send admin alert: {str(e)}')
 
     def handle_event(self, event):
         """
@@ -105,6 +147,8 @@ class StripeWH_Handler:
                 attempt += 1
                 time.sleep(1)
         if order_exists:
+            order.webhook_received = True
+            order.save()
             self._send_confirmation_email(order)
             return HttpResponse(
                 content=f'Webhook received: {event["type"]} | SUCCESS: Verified order already in database',
@@ -148,9 +192,13 @@ class StripeWH_Handler:
             except Exception as e:
                 if order:
                     order.delete()
+                logger.error(f'Webhook order creation failed: {str(e)}')
                 return HttpResponse(
                     content=f'Webhook received: {event["type"]} | ERROR: {e}',
                     status=500)
+        
+        order.webhook_received = True
+        order.save()
         self._send_confirmation_email(order)
         return HttpResponse(
             content=f'Webhook received: {event["type"]} | SUCCESS: Created order in webhook',

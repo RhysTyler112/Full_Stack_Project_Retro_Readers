@@ -4,6 +4,8 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.conf import settings
+import threading
+import time
 
 from .forms import OrderForm
 from profiles.forms import UserProfileForm
@@ -14,6 +16,41 @@ from bag.contexts import bag_contents
 
 import stripe
 import json
+
+def send_delayed_email(order_number, delay_seconds=30):
+    """
+    Send confirmation email after delay if webhook hasn't processed it
+    """
+    def delayed_send():
+        time.sleep(delay_seconds)
+        try:
+            order = Order.objects.get(order_number=order_number)
+            if not order.email_sent:
+                subject = render_to_string(
+                    'checkout/confirmation_emails/confirmation_email_subject.txt',
+                    {'order': order}
+                )
+                body = render_to_string(
+                    'checkout/confirmation_emails/confirmation_email_body.txt',
+                    {'order': order, 'contact_email': settings.DEFAULT_FROM_EMAIL}
+                )
+                send_mail(
+                    subject,
+                    body,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [order.email]
+                )
+                order.email_sent = True
+                order.save()
+                print(f"Delayed email sent for order {order_number}")
+        except Order.DoesNotExist:
+            print(f"Order {order_number} not found for delayed email")
+        except Exception as e:
+            print(f"Error sending delayed email for order {order_number}: {e}")
+    
+    thread = threading.Thread(target=delayed_send)
+    thread.daemon = True
+    thread.start()
 
 @require_POST
 def cache_checkout_data(request):
@@ -166,29 +203,12 @@ def checkout_success(request, order_number):
             if user_profile_form.is_valid():
                 user_profile_form.save()
 
-    # Send confirmation email
-    try:
-        subject = render_to_string(
-            'checkout/confirmation_emails/confirmation_email_subject.txt',
-            {'order': order}
-        )
-        body = render_to_string(
-            'checkout/confirmation_emails/confirmation_email_body.txt',
-            {'order': order, 'contact_email': settings.DEFAULT_FROM_EMAIL}
-        )
-        send_mail(
-            subject,
-            body,
-            settings.DEFAULT_FROM_EMAIL,
-            [order.email]
-        )
-        messages.success(request, f'Order successfully processed! \
-            Your order number is {order_number}. A confirmation \
-            email has been sent to {order.email}.')
-    except Exception as e:
-        messages.success(request, f'Order successfully processed! \
-            Your order number is {order_number}. However, there was an issue \
-            sending your confirmation email. Please contact us if you need a copy.')
+    # Start delayed email sending (webhook will cancel this if it processes first)
+    send_delayed_email(order_number, delay_seconds=30)
+    
+    messages.success(request, f'Order successfully processed! \
+        Your order number is {order_number}. A confirmation \
+        email will be sent to {order.email}.')
 
     if 'bag' in request.session:
         del request.session['bag']
