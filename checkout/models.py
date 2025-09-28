@@ -3,7 +3,7 @@ import uuid
 from django.db import models
 from django.db.models import Sum
 from django.conf import settings 
-from django.db.models.signals import pre_save
+from django.db.models.signals import pre_save, post_save, post_delete
 from django.dispatch import receiver
 
 from books.models import Books
@@ -78,20 +78,39 @@ class OrderLineItem(models.Model):
         Override the original save method to set the lineitem_total
         based on the format and quantity
         '''
+        price = None
+        
         if self.format == 'softcover':
-            self.lineitem_total = self.book.price_softcover * self.quantity
+            price = self.book.price_softcover
         elif self.format == 'hardcover':
-            self.lineitem_total = self.book.price_hardcover * self.quantity
+            price = self.book.price_hardcover
         elif self.format == 'audiobook':
-            self.lineitem_total = self.book.price_audiobook * self.quantity
-        else:
-            raise ValueError('Invalid format')
+            price = self.book.price_audiobook
         
+        # Handle null prices
+        if price is None:
+            raise ValueError(f'Price not set for {self.format} format of book: {self.book.title}')
+        
+        self.lineitem_total = price * self.quantity
         super().save(*args, **kwargs)
-        
-    @receiver(pre_save, sender=Order)
-    def update_grand_total(sender, instance, **kwargs):
-        instance.grand_total = instance.order_total + instance.delivery_cost
 
     def __str__(self):
         return f'SKU {self.book.sku} on order {self.order.order_number}'
+    
+@receiver(pre_save, sender=Order)
+def update_grand_total(sender, instance, **kwargs):
+    instance.grand_total = instance.order_total + instance.delivery_cost
+
+@receiver(post_save, sender=OrderLineItem)
+def update_on_save(sender, instance, created, **kwargs):
+    """
+    Update order total on lineitem update/create
+    """
+    instance.order.update_total()
+
+@receiver(post_delete, sender=OrderLineItem)
+def update_on_delete(sender, instance, **kwargs):
+    """
+    Update order total on lineitem delete
+    """
+    instance.order.update_total()

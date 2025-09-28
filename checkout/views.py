@@ -62,6 +62,7 @@ def checkout(request):
                             order=order,
                             book=book,
                             quantity=item_data,
+                            format='softcover',
                         )
                         order_line_item.save()
                     else:
