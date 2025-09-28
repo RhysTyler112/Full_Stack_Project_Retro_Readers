@@ -28,4 +28,14 @@ class OrderAdmin(admin.ModelAdmin):
 
     ordering = ('-date',)
 
+
+@admin.register(OrderLineItem)
+class OrderLineItemAdmin(admin.ModelAdmin):
+    list_display = ('order', 'book', 'format', 'quantity', 'lineitem_total')
+    list_filter = ('format', 'book__category')
+    search_fields = ('order__order_number', 'book__title', 'book__author')
+    readonly_fields = ('lineitem_total',)
+    ordering = ('-order__date',)
+
+
 admin.site.register(Order, OrderAdmin)
