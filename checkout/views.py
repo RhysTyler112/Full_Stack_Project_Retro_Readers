@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect, reverse, get_object_or_404, HttpResponse
 from django.views.decorators.http import require_POST
 from django.contrib import messages
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
 from django.conf import settings
 
 from .forms import OrderForm
@@ -164,9 +166,29 @@ def checkout_success(request, order_number):
             if user_profile_form.is_valid():
                 user_profile_form.save()
 
-    messages.success(request, f'Order successfully processed! \
-        Your order number is {order_number}. A confirmation \
-        email will be sent to {order.email}.')
+    # Send confirmation email
+    try:
+        subject = render_to_string(
+            'checkout/confirmation_emails/confirmation_email_subject.txt',
+            {'order': order}
+        )
+        body = render_to_string(
+            'checkout/confirmation_emails/confirmation_email_body.txt',
+            {'order': order, 'contact_email': settings.DEFAULT_FROM_EMAIL}
+        )
+        send_mail(
+            subject,
+            body,
+            settings.DEFAULT_FROM_EMAIL,
+            [order.email]
+        )
+        messages.success(request, f'Order successfully processed! \
+            Your order number is {order_number}. A confirmation \
+            email has been sent to {order.email}.')
+    except Exception as e:
+        messages.success(request, f'Order successfully processed! \
+            Your order number is {order_number}. However, there was an issue \
+            sending your confirmation email. Please contact us if you need a copy.')
 
     if 'bag' in request.session:
         del request.session['bag']
