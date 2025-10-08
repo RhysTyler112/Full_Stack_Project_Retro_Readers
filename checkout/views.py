@@ -4,8 +4,6 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.conf import settings
-import threading
-import time
 
 from .forms import OrderForm
 from profiles.forms import UserProfileForm
@@ -13,55 +11,55 @@ from profiles.models import UserProfile
 from .models import Order, OrderLineItem
 from books.models import Books
 from bag.contexts import bag_contents
+from bag.utils import get_or_create_cart
 
 import stripe
 import json
 
-def send_delayed_email(order_number, delay_seconds=30):
+def send_confirmation_email(order):
     """
-    Send confirmation email after delay if webhook hasn't processed it
+    Send order confirmation email immediately
     """
-    def delayed_send():
-        time.sleep(delay_seconds)
-        try:
-            order = Order.objects.get(order_number=order_number)
-            if not order.email_sent:
-                subject = render_to_string(
-                    'checkout/confirmation_emails/confirmation_email_subject.txt',
-                    {'order': order}
-                )
-                body = render_to_string(
-                    'checkout/confirmation_emails/confirmation_email_body.txt',
-                    {'order': order, 'contact_email': settings.DEFAULT_FROM_EMAIL}
-                )
-                send_mail(
-                    subject,
-                    body,
-                    settings.DEFAULT_FROM_EMAIL,
-                    [order.email]
-                )
-                order.email_sent = True
-                order.save()
-                print(f"Delayed email sent for order {order_number}")
-        except Order.DoesNotExist:
-            print(f"Order {order_number} not found for delayed email")
-        except Exception as e:
-            print(f"Error sending delayed email for order {order_number}: {e}")
-    
-    thread = threading.Thread(target=delayed_send)
-    thread.daemon = True
-    thread.start()
+    try:
+        subject = render_to_string(
+            'checkout/confirmation_emails/confirmation_email_subject.txt',
+            {'order': order}
+        )
+        body = render_to_string(
+            'checkout/confirmation_emails/confirmation_email_body.txt',
+            {'order': order, 'contact_email': settings.DEFAULT_FROM_EMAIL}
+        )
+        send_mail(
+            subject,
+            body,
+            settings.DEFAULT_FROM_EMAIL,
+            [order.email]
+        )
+        order.email_sent = True
+        order.save()
+        return True
+    except Exception as e:
+        print(f"Error sending confirmation email for order {order.order_number}: {e}")
+        return False
 
 @require_POST
 def cache_checkout_data(request):
     try:
         pid = request.POST.get('client_secret').split('_secret')[0]
         stripe.api_key = settings.STRIPE_SECRET_KEY
+        
+        # Get cart items for metadata
+        cart = get_or_create_cart(request)
+        cart_data = {}
+        for item in cart.items.all():
+            if item.book.isbn not in cart_data:
+                cart_data[item.book.isbn] = {}
+            cart_data[item.book.isbn][item.format] = item.quantity
+        
         stripe.PaymentIntent.modify(pid, metadata={
-            'bag': json.dumps(request.session.get('bag', {})),
+            'bag': json.dumps(cart_data),
             'save_info': request.POST.get('save_info'),
             'username': request.user,
-            
         })    
         return HttpResponse(status=200)
     except Exception as e:
@@ -73,7 +71,12 @@ def checkout(request):
     stripe_secret_key = settings.STRIPE_SECRET_KEY
 
     if request.method == 'POST':
-        bag = request.session.get('bag', {})
+        # Get cart from database instead of session
+        cart = get_or_create_cart(request)
+        
+        if not cart.items.exists():
+            messages.error(request, "Your cart is empty.")
+            return redirect(reverse('books'))
 
         form_data = {
             'full_name': request.POST['full_name'],
@@ -91,45 +94,44 @@ def checkout(request):
             order = order_form.save(commit=False)
             pid = request.POST.get('client_secret').split('_secret')[0]
             order.stripe_pid = pid
-            order.original_bag = json.dumps(bag)
+            
+            # Create original_bag from cart items
+            cart_data = {}
+            for item in cart.items.all():
+                if item.book.isbn not in cart_data:
+                    cart_data[item.book.isbn] = {}
+                cart_data[item.book.isbn][item.format] = item.quantity
+            order.original_bag = json.dumps(cart_data)
             order.save()
-            for item_isbn, item_data in bag.items():
+            
+            # Create order line items from cart
+            for cart_item in cart.items.all():
                 try:
-                    book = Books.objects.get(isbn=item_isbn)
-                    if isinstance(item_data, int):
-                        order_line_item = OrderLineItem(
-                            order=order,
-                            book=book,
-                            quantity=item_data,
-                            format='softcover',
-                        )
-                        order_line_item.save()
-                    else:
-                        for format, quantity in item_data.items():
-                            order_line_item = OrderLineItem(
-                                order=order,
-                                book=book,
-                                quantity=quantity,
-                                format=format,
-                            )
-                            order_line_item.save()
-                except Books.DoesNotExist:
-                    messages.error(request, (
-                        "One of the books in your bag wasn't found in our database. "
-                        "Please call us for assistance!")
+                    order_line_item = OrderLineItem(
+                        order=order,
+                        book=cart_item.book,
+                        quantity=cart_item.quantity,
+                        format=cart_item.format,
                     )
+                    order_line_item.save()
+                except Exception as e:
+                    messages.error(request, f"Error processing your order: {str(e)}")
                     order.delete()
                     return redirect(reverse('view_bag'))
 
+            # Clear the cart after successful order
+            cart.clear()
+            
             request.session['save_info'] = 'save-info' in request.POST
             return redirect(reverse('checkout_success', args=[order.order_number]))
         else:
-            messages.error(request, 'There was an error with your form. \
-                Please double check your information.')
+            messages.error(request, 'There was an error with your form. Please double check your information.')
 
     else:
-        bag = request.session.get('bag', {})
-        if not bag:
+        # Get cart from database instead of session
+        cart = get_or_create_cart(request)
+        
+        if not cart.items.exists():
             messages.error(request, "There's nothing in your bag at the moment")
             return redirect(reverse('books'))
         
@@ -162,8 +164,7 @@ def checkout(request):
             order_form = OrderForm()
 
         if not stripe_public_key:
-            messages.warning(request, 'Stripe public key is missing. \
-                Did you forget to set it in your environment?')
+            messages.warning(request, 'Stripe public key is missing. Did you forget to set it in your environment?')
 
         template = 'checkout/checkout.html'
         context = {
@@ -203,15 +204,20 @@ def checkout_success(request, order_number):
             if user_profile_form.is_valid():
                 user_profile_form.save()
 
-    # Start delayed email sending (webhook will cancel this if it processes first)
-    send_delayed_email(order_number, delay_seconds=30)
+    # Send confirmation email immediately
+    email_sent = send_confirmation_email(order)
     
-    messages.success(request, f'Order successfully processed! \
-        Your order number is {order_number}. A confirmation \
-        email will be sent to {order.email}.')
+    if email_sent:
+        messages.success(request, f'Order successfully processed! Your order number is {order_number}. A confirmation email has been sent to {order.email}.')
+    else:
+        messages.success(request, f'Order successfully processed! Your order number is {order_number}. We will send a confirmation email to {order.email} shortly.')
+        messages.warning(request, 'There was an issue sending the confirmation email, but your order was processed successfully.')
 
+    # Clean up session data
     if 'bag' in request.session:
         del request.session['bag']
+    if 'save_info' in request.session:
+        del request.session['save_info']
 
     template = 'checkout/checkout_success.html'
     context = {

@@ -1,83 +1,101 @@
 from django.shortcuts import render, redirect, reverse, get_object_or_404, HttpResponse
 from django.contrib import messages
+from django.http import JsonResponse
 from books.models import Books
+from .utils import (
+    get_or_create_cart, 
+    add_to_cart, 
+    remove_from_cart, 
+    update_cart_item_quantity, 
+    migrate_session_to_db_cart
+)
 
 def view_bag(request):
     """ A view that renders the bag contents page """
+    # Migrate any existing session cart to database
+    migrate_session_to_db_cart(request)
     return render(request, 'bag/bag.html')
 
 def add_to_bag(request, isbn):
     """Add a quantity of the specified book to the shopping bag"""
-    book = get_object_or_404(Books, isbn=isbn)
-    quantity = int(request.POST.get('quantity'))
-    format = request.POST.get('format')
-    redirect_url = request.POST.get('redirect_url')
+    if request.method != 'POST':
+        messages.error(request, 'Invalid request method.')
+        return redirect('books')
+    
+    try:
+        quantity = int(request.POST.get('quantity', 1))
+        if quantity <= 0:
+            raise ValueError("Quantity must be positive")
+    except (ValueError, TypeError):
+        messages.error(request, 'Please enter a valid quantity.')
+        return redirect(request.POST.get('redirect_url', 'books'))
 
-    # Ensure a format is selected
+    format = request.POST.get('format')
+    redirect_url = request.POST.get('redirect_url', 'books')
+
+    # Validate format is provided
     if not format:
         messages.error(request, 'Please select a format before adding the book to your bag.')
         return redirect(redirect_url)
 
-    bag = request.session.get('bag', {})
+    # Validate format is valid
+    if format not in ['softcover', 'hardcover', 'audiobook']:
+        messages.error(request, 'Invalid format selected.')
+        return redirect(redirect_url)
 
-    if isbn in bag:
-        if format in bag[isbn]:
-            bag[isbn][format] += quantity
-        else:
-            bag[isbn][format] = quantity
+    # Add to cart with validation
+    success, message = add_to_cart(request, isbn, format, quantity)
+    
+    if success:
+        messages.success(request, message)
     else:
-        bag[isbn] = {format: quantity}
-        messages.success(request, f'Added {book.title} ({format}) to your bag')
+        messages.error(request, message)
 
-    request.session['bag'] = bag
     return redirect(redirect_url)
 
 def adjust_bag(request, isbn):
     """Adjust the quantity of the specified book in the shopping bag"""
-    book = get_object_or_404(Books, isbn=isbn)
-    quantity = int(request.POST.get('quantity'))
+    if request.method != 'POST':
+        messages.error(request, 'Invalid request method.')
+        return redirect('view_bag')
+    
+    try:
+        quantity = int(request.POST.get('quantity', 0))
+    except (ValueError, TypeError):
+        messages.error(request, 'Please enter a valid quantity.')
+        return redirect(reverse('view_bag'))
+
     format = request.POST.get('format')
-    bag = request.session.get('bag', {})
+    
+    if not format:
+        messages.error(request, 'Format is required.')
+        return redirect(reverse('view_bag'))
 
-    if format:
-        if quantity > 0:
-            bag[isbn][format] = quantity
-            messages.success(request, f'Updated {book.title} ({format}) quantity to {quantity}')
-        else:
-            del bag[isbn][format]
-            if not bag[isbn]:
-                bag.pop(isbn)
-            messages.success(request, f'Removed {book.title} ({format}) from your bag')
+    # Update cart item quantity
+    success, message = update_cart_item_quantity(request, isbn, format, quantity)
+    
+    if success:
+        messages.success(request, message)
     else:
-        if quantity > 0:
-            bag[isbn] = quantity
-            messages.success(request, f'Updated {book.title} quantity to {quantity}')
-        else:
-            bag.pop(isbn)
-            messages.success(request, f'Removed {book.title} from your bag')
+        messages.error(request, message)
 
-    request.session['bag'] = bag
     return redirect(reverse('view_bag'))
 
 def remove_from_bag(request, isbn):
     """Remove the specified book format from the shopping bag"""
-    book = get_object_or_404(Books, isbn=isbn)
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+    
     format = request.POST.get('format')
-    bag = request.session.get('bag', {})
+    
+    if not format:
+        return JsonResponse({'error': 'Format is required'}, status=400)
 
-    try:
-        if isbn in bag:
-            if format and format in bag[isbn]:
-                del bag[isbn][format]
-                if not bag[isbn]:
-                    bag.pop(isbn)
-                messages.success(request, f'Removed {book.title} ({format}) from your bag')
-            else:
-                messages.error(request, f'Format {format} not found in your bag for {book.title}')
-            request.session['bag'] = bag
-            return HttpResponse(status=200)
-        else:
-            return HttpResponse(status=404)
-    except Exception as e:
-        messages.error(request, f'Error removing item: {e}')
-        return HttpResponse(status=500)
+    success, message = remove_from_cart(request, isbn, format)
+    
+    if success:
+        messages.success(request, message)
+        return HttpResponse(status=200)
+    else:
+        messages.error(request, message)
+        return JsonResponse({'error': message}, status=404)
