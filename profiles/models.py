@@ -3,7 +3,26 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from books.models import Books
 
-from django_countries.fields import CountryField
+# Use the same country choices as in checkout
+COUNTRY_CHOICES = [
+    ('', 'Select Country'),
+    ('GB', 'United Kingdom'),
+    ('US', 'United States'),
+    ('IE', 'Ireland'),
+    ('FR', 'France'),
+    ('DE', 'Germany'),
+    ('ES', 'Spain'),
+    ('IT', 'Italy'),
+    ('NL', 'Netherlands'),
+    ('BE', 'Belgium'),
+    ('AU', 'Australia'),
+    ('CA', 'Canada'),
+    ('NZ', 'New Zealand'),
+    ('SE', 'Sweden'),
+    ('NO', 'Norway'),
+    ('DK', 'Denmark'),
+    ('FI', 'Finland'),
+]
 
 
 class UserProfile(models.Model):
@@ -18,7 +37,7 @@ class UserProfile(models.Model):
     default_town_or_city = models.CharField(max_length=40, null=True, blank=True)
     default_county = models.CharField(max_length=80, null=True, blank=True)
     default_postcode = models.CharField(max_length=20, null=True, blank=True)
-    default_country = CountryField(blank_label='Country', null=True, blank=True)
+    default_country = models.CharField(max_length=2, choices=COUNTRY_CHOICES, null=True, blank=True)
 
     def __str__(self):
         return self.user.username

@@ -6,10 +6,7 @@ class OrderForm(forms.ModelForm):
         model = Order
         fields = ['full_name', 'email', 'phone_number', 'street_address1', 
                   'street_address2', 'town_or_city', 'postcode', 'county', 'country']
-        widgets = {
-            'county': forms.TextInput(attrs={'class': 'form-control'}),
-            'country': forms.Select(attrs={'class': 'form-control'}),
-        }
+        
     def __init__(self, *args, **kwargs):
         '''
         Add placeholders and classes, remove auto-generated labels
@@ -28,13 +25,16 @@ class OrderForm(forms.ModelForm):
         }
         
         self.fields['full_name'].widget.attrs['autofocus'] = True
-        for field in self.fields:
-            if field != 'country':
-                if self.fields[field].required:
-                    placeholder = f'{placeholders[field]} *'
+        
+        # Handle all fields normally now that country is a regular CharField
+        for field_name in self.fields:
+            field = self.fields[field_name]
+            if field_name in placeholders:
+                if field.required:
+                    placeholder = f'{placeholders[field_name]} *'
                 else:
-                    placeholder = placeholders[field]
-            self.fields[field].widget.attrs['placeholder'] = placeholder
-            self.fields[field].widget.attrs['class'] = 'stripe-style-input form-control'
-            self.fields[field].label = False
+                    placeholder = placeholders[field_name]
+                field.widget.attrs['placeholder'] = placeholder
+            field.widget.attrs['class'] = 'stripe-style-input form-control'
+            field.label = False
         

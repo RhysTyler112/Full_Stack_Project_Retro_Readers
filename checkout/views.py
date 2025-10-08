@@ -59,12 +59,13 @@ def cache_checkout_data(request):
         stripe.PaymentIntent.modify(pid, metadata={
             'bag': json.dumps(cart_data),
             'save_info': request.POST.get('save_info'),
-            'username': request.user,
+            'username': str(request.user),
         })    
         return HttpResponse(status=200)
     except Exception as e:
+        print(f"Error in cache_checkout_data: {e}")  # Debug print
         messages.error(request, 'Sorry, your payment cannot be processed right now. Please try again later.')
-        return HttpResponse(content=e, status=400)
+        return HttpResponse(content=str(e), status=400)
 
 def checkout(request):
     stripe_public_key = settings.STRIPE_PUBLIC_KEY
