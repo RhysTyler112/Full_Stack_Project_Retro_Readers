@@ -24,10 +24,16 @@ class StripeWH_Handler:
     def _send_confirmation_email(self, order):
         """Send the user a confirmation email"""
         try:
+            print(f"=== WEBHOOK EMAIL CHECK ===")  # Debug
+            print(f"Order: {order.order_number}")  # Debug
+            print(f"Email already sent: {order.email_sent}")  # Debug
+            
             # Check if email already sent
             if order.email_sent:
+                print(f"Email already sent, skipping webhook email")  # Debug
                 return
                 
+            print(f"Webhook sending email to: {order.email}")  # Debug
             cust_email = order.email
             subject = render_to_string(
                 'checkout/confirmation_emails/confirmation_email_subject.txt',
@@ -46,6 +52,7 @@ class StripeWH_Handler:
             # Mark email as sent to prevent duplicates
             order.email_sent = True
             order.save()
+            print(f"Webhook email sent successfully to: {cust_email}")  # Debug
             
         except Exception as e:
             logger.error(f'Failed to send confirmation email for order {order.order_number}: {str(e)}')
