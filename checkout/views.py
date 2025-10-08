@@ -21,25 +21,36 @@ def send_confirmation_email(order):
     Send order confirmation email immediately
     """
     try:
+        print(f"Attempting to send email to: {order.email}")  # Debug print
+        
         subject = render_to_string(
             'checkout/confirmation_emails/confirmation_email_subject.txt',
             {'order': order}
-        )
+        ).strip()  # Remove any trailing newlines
+        
         body = render_to_string(
             'checkout/confirmation_emails/confirmation_email_body.txt',
             {'order': order, 'contact_email': settings.DEFAULT_FROM_EMAIL}
         )
+        
+        print(f"Email subject: {subject}")  # Debug print
+        print(f"Sending from: {settings.DEFAULT_FROM_EMAIL}")  # Debug print
+        
         send_mail(
             subject,
             body,
             settings.DEFAULT_FROM_EMAIL,
-            [order.email]
+            [order.email],
+            fail_silently=False,  # This will raise exceptions if email fails
         )
+        
         order.email_sent = True
         order.save()
+        print(f"Email successfully sent to {order.email}")  # Debug print
         return True
     except Exception as e:
         print(f"Error sending confirmation email for order {order.order_number}: {e}")
+        print(f"Error type: {type(e).__name__}")  # Show error type
         return False
 
 @require_POST
@@ -123,6 +134,10 @@ def checkout(request):
             # Clear the cart after successful order
             cart.clear()
             
+            print(f"=== ORDER CREATED SUCCESSFULLY ===")  # Debug print
+            print(f"Order number: {order.order_number}")  # Debug print
+            print(f"Redirecting to checkout_success")  # Debug print
+            
             request.session['save_info'] = 'save-info' in request.POST
             return redirect(reverse('checkout_success', args=[order.order_number]))
         else:
@@ -181,8 +196,14 @@ def checkout_success(request, order_number):
     """
     Handle successful checkouts
     """
+    print(f"=== CHECKOUT SUCCESS VIEW CALLED ===")  # Debug print
+    print(f"Order number: {order_number}")  # Debug print
+    
     save_info = request.session.get('save_info')
     order = get_object_or_404(Order, order_number=order_number)
+    
+    print(f"Order found: {order}")  # Debug print
+    print(f"Order email: {order.email}")  # Debug print
 
     if request.user.is_authenticated:
         profile = UserProfile.objects.get(user=request.user)
@@ -206,7 +227,9 @@ def checkout_success(request, order_number):
                 user_profile_form.save()
 
     # Send confirmation email immediately
+    print(f"=== CALLING SEND_CONFIRMATION_EMAIL ===")  # Debug print
     email_sent = send_confirmation_email(order)
+    print(f"Email sent result: {email_sent}")  # Debug print
     
     if email_sent:
         messages.success(request, f'Order successfully processed! Your order number is {order_number}. A confirmation email has been sent to {order.email}.')
